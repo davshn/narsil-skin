@@ -34,6 +34,11 @@ html[data-theme-state=waiting] body::after { opacity: 1; }
   background: var(--wall-glass) !important; backdrop-filter: blur(14px);
   box-shadow: inset 1px 0 0 var(--wall-rim);
 }
+/* a mod's band above the prompt: frosted like the prompt, but more opaque, so the scene shows through only faintly */
+[data-plugin-drawn=AbovePrompt] {
+  background: color-mix(in srgb, var(--wall-halo) 80%, transparent) !important; backdrop-filter: blur(12px);
+  border-radius: var(--cds-radius-composer, 16px); box-shadow: inset 0 0 0 1px var(--wall-rim);
+}
 [data-cds=ChatComposer] > .bg-surface-3:focus-within { box-shadow: inset 0 0 0 1.5px var(--cds-text-accent) !important; }
 
 [data-testid=start-card-clawd] > * { filter: drop-shadow(0 0 8px var(--wall-rim)); }
