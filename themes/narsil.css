@@ -15,12 +15,12 @@ html::after {
 html[data-theme-event=done]::after { opacity: .9; }
 html::before {
   content: ""; position: fixed; left: 0; right: -400px; bottom: 0; height: 46px; pointer-events: none;
-  z-index: 2147483646; opacity: .35; transition: opacity .3s, height .3s;
+  z-index: 2147483646; opacity: .2; transition: opacity .3s, height .3s;
   background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='46'><path d='M0 22 Q50 6 100 22 T200 22 T300 22 T400 22 V46 H0 Z' fill='%235aaeff'/></svg>") repeat-x bottom / 400px 100%;
 }
-html[data-theme-event=tool]::before { opacity: .6; height: 60px; }
+html[data-theme-event=tool]::before { opacity: .4; height: 60px; }
 html[data-theme-event=error]::before {
-  opacity: .6;
+  opacity: .4;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='46'><path d='M0 22 Q50 6 100 22 T200 22 T300 22 T400 22 V46 H0 Z' fill='%23ff5a6e'/></svg>");
 }
 
