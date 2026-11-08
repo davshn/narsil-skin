@@ -1,5 +1,11 @@
 # Claude Desktop Themes
 
+> **Fork notice.** This is a fork of
+> [0toshigami/claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes) by
+> [0toshigami](https://github.com/0toshigami), maintained by [davshn](https://github.com/davshn) as the base of the
+> narsil-skin mod. All original work, design and themes are credit of 0toshigami and are used under the MIT License,
+> whose original copyright notice is kept in [LICENSE](LICENSE).
+
 Themes for Claude Desktop, applied live. Pick one from a strip above the prompt with `/themes`.
 
 [![Switching themes with /themes in Claude Desktop](docs/demo.gif)](https://github.com/user-attachments/assets/32f4bfa8-eecc-4993-8b02-3a0960ac27c3)
