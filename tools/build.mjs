@@ -25,7 +25,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     : process.platform === 'darwin' ? join(homedir(), 'Library', 'Application Support', 'Claude') : undefined
   if (!userData) throw new Error('only Windows and macOS are supported')
   const slot = join(userData, 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
-  if (!existsSync(join(slot, 'theme.js'))) throw new Error('not installed: press "Install extension" in /themes first')
+  if (!existsSync(join(slot, 'theme.js'))) throw new Error('not installed: press "Install extension" in /narsil-skin themes first')
   writeFileSync(join(slot, 'theme.js'), build())
   console.log(`built into ${join(slot, 'theme.js')}; restart Claude Desktop to see it`)
 }

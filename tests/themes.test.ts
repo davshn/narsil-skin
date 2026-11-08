@@ -53,7 +53,7 @@ const PANE = {
   props: { title: 'Themes', isFocused: false, bodyColumns: 60, placement: 'dock', scroll: { offset: 0, bodyRows: 40 }, view: {} },
 } as const
 
-test('/themes opens the side pane, a button per theme, and Close closes it', async ($, on) => {
+test('/narsil-skin themes opens the side pane, a button per theme, and Close closes it', async ($, on) => {
   on('ui.render', { component: 'AbovePrompt' }, ($, e) => $.ui.resolve(e).Box({}))
   const opened: string[] = [], closed: string[] = []
   on('ui.open', ($, e) => { opened.push(e.id); return { value: { isPlaced: true } } })
@@ -67,7 +67,7 @@ test('/themes opens the side pane, a button per theme, and Close closes it', asy
     throw new Error('ENOENT')
   })
   const props = { hasSurvey: false, isWorking: false, maxRows: 40, columns: 100 }
-  const result = await $.command.run({ command: 'themes' })
+  const result = await $.command.run({ command: 'narsil-skin', args: 'themes' })
   expect(result.text).toMatch(/side pane/)
   expect(opened).toEqual(['themes'])
   // nothing is drawn above the prompt any more
@@ -80,7 +80,7 @@ test('/themes opens the side pane, a button per theme, and Close closes it', asy
   for (const t of THEMES) expect(await bare.find({ key: `use-${t.id}` })).toBeUndefined()
   await bare.unmount()
   restarted = true
-  await $.command.run({ command: 'themes' })
+  await $.command.run({ command: 'narsil-skin', args: 'themes' })
   const ui = await $.ui.mount(PANE)
   expect(await ui.find({ key: 'install' })).toBeUndefined()
   expect(await ui.find({ key: 'remove' })).toBeDefined()
@@ -119,7 +119,7 @@ test('on macOS the pane installs into Application Support and sets REACT_PROFILE
   })
   const props = { hasSurvey: false, isWorking: false, maxRows: 40, columns: 100 }
 
-  await $.command.run({ command: 'themes' })
+  await $.command.run({ command: 'narsil-skin', args: 'themes' })
   const bare = await $.ui.mount(PANE)
   await bare.press({ key: 'install' })
   await bare.unmount()
@@ -137,23 +137,26 @@ test('on macOS the pane installs into Application Support and sets REACT_PROFILE
   expect(runs).toContainEqual(['rm', '-rf', slot])
 })
 
-test('/narsil-skin themes opens the same pane as /themes, and anything else shows the help', async ($, on) => {
+test('only /narsil-skin is registered: its themes opens the pane, and anything else shows the help', async ($, on) => {
+  const registered: string[] = []
+  on('command.register', ($, e) => { registered.push(e.name); return { value: { command: e.name } } })
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
   const opened: string[] = []
   on('ui.open', ($, e) => { opened.push(e.id); return { value: { isPlaced: true } } })
-  on('env.get', ($, e) => ({ value: e.name === 'APPDATA' ? 'C:\AppData' : undefined }))
+  on('env.get', () => ({ value: undefined }))
   on('fs.read', () => { throw new Error('ENOENT') })
+  await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
+  expect(registered).toEqual(['narsil-skin'])
   const viaGroup = await $.command.run({ command: 'narsil-skin', args: 'themes' })
   expect(viaGroup.text).toMatch(/side pane/)
   expect(opened).toEqual(['themes'])
-  const viaAlias = await $.command.run({ command: 'themes', args: '' })
-  expect(viaAlias.text).toBe(viaGroup.text)
-  expect(opened).toEqual(['themes', 'themes'])
   for (const args of ['', 'help', 'nope']) {
     const help = await $.command.run({ command: 'narsil-skin', args })
     expect(help.text).toMatch(/\/narsil-skin themes/)
     expect(help.text).toMatch(/\/narsil-skin:make-theme/)
+    expect(help.text).not.toMatch(/\/themes/)
   }
-  expect(opened).toEqual(['themes', 'themes'])
+  expect(opened).toEqual(['themes'])
 })
 
 // (Windows paths built with the separator by code, so this file holds no backslash to escape)
@@ -185,7 +188,7 @@ test('on Windows the pane installs into the Claude-Data folder the app reads, wh
     runs.push([...e.argv])
     return { value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
   })
-  await $.command.run({ command: 'themes', args: '' })
+  await $.command.run({ command: 'narsil-skin', args: 'themes' })
   const bare = await $.ui.mount(PANE)
   await bare.press({ key: 'install' })
   await bare.unmount()
@@ -215,7 +218,7 @@ test('on Windows without a Claude-Data folder the pane keeps installing into App
     throw new Error('ENOENT')
   })
   on('process.run', () => ({ value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
-  await $.command.run({ command: 'themes', args: '' })
+  await $.command.run({ command: 'narsil-skin', args: 'themes' })
   const bare = await $.ui.mount(PANE)
   await bare.press({ key: 'install' })
   await bare.unmount()

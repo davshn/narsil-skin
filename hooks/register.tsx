@@ -297,11 +297,11 @@ const nextVeil = async ($: EngineInterface) => { await update($, veil, next(VEIL
 
 const HELP = [
   'Narsil Skin commands:',
-  '  /narsil-skin themes   open the theme pane (same as /themes)',
+  '  /narsil-skin themes   open the theme pane',
   '  /narsil-skin:make-theme   make your own theme from an idea or a picture',
 ].join('\n')
 
-// /themes and /narsil-skin themes: refresh what the pane shows, then open it
+// /narsil-skin themes: refresh what the pane shows, then open it
 const showThemes = async ($: EngineInterface) => {
   await check($).catch(() => {})
   await loadMine($).catch(() => {})
@@ -312,8 +312,7 @@ const showThemes = async ($: EngineInterface) => {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    // (not /theme: Claude Code has its own)
-    await $.command.register({ name: 'themes', description: 'Pick a theme for Claude Desktop' })
+    // (one command for the mod, so it does not take a name other plugins may want)
     await $.command.register({ name: 'narsil-skin', description: 'Narsil Skin: themes (open the theme pane), help' })
     try {
       await loadMine($).catch(() => {})
@@ -328,8 +327,6 @@ export const register: Register = on => {
     } catch {}
     return next(e)
   })
-
-  on('command.run', { command: 'themes' }, async $ => ({ text: await showThemes($) }))
 
   on('command.run', { command: 'narsil-skin' }, async ($, e) =>
     ({ text: e.args.trim() === 'themes' ? await showThemes($) : HELP }))
@@ -383,7 +380,7 @@ export const register: Register = on => {
         ) : stage === 'restart' ? (
           <Box key="notice" flexDirection="column" gap="xs" padding={1} borderStyle="round" borderColor="success">
             <Text color="success" weight="semibold">Installed. Now restart Claude Desktop</Text>
-            <Text>{`Quit Claude Desktop fully (${QUIT[os]}), open it again, then type /themes.`}</Text>
+            <Text>{`Quit Claude Desktop fully (${QUIT[os]}), open it again, then type /narsil-skin themes.`}</Text>
             <Text dimColor>{`Still here after a restart? ${BY_HAND[os]}, then restart again.`}</Text>
           </Box>
         ) : worn.wallpaper && (

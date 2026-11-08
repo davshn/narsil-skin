@@ -6,7 +6,7 @@
     {
       "name": "narsil-skin",
       "source": "./",
-      "description": "Themes and live ASCII wallpapers for Claude Desktop, picked with /themes",
+      "description": "Themes and live ASCII wallpapers for Claude Desktop, picked with /narsil-skin themes",
       "category": "appearance",
       "tags": ["themes", "wallpaper", "ascii", "claude-desktop", "narsil"]
     }

@@ -5,7 +5,7 @@
   <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-oscuro.svg" width="150" alt="Narsil estrenando tema (modo oscuro)">
 </p>
 
-Narsil Skin es el tercer mod de la familia de [Narsil](https://github.com/davshn/narsil-pet), junto a [Narsil Check](https://github.com/davshn/narsil-check): le cambia la piel a la app de escritorio de Claude. Aplica temas de color en vivo (colores, fuentes, esquinas y sombras) y fondos animados dibujados con caracteres que se mueven detrás del chat. Los temas se eligen desde un panel lateral con `/themes`, así que el espacio encima del prompt queda libre para Narsil.
+Narsil Skin es el tercer mod de la familia de [Narsil](https://github.com/davshn/narsil-pet), junto a [Narsil Check](https://github.com/davshn/narsil-check): le cambia la piel a la app de escritorio de Claude. Aplica temas de color en vivo (colores, fuentes, esquinas y sombras) y fondos animados dibujados con caracteres que se mueven detrás del chat. Los temas se eligen desde un panel lateral con `/narsil-skin themes`, así que el espacio encima del prompt queda libre para Narsil.
 
 Es un *fork* de [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), de [0toshigami](https://github.com/0toshigami): todo el trabajo original, el diseño y los temas son suyos. Consulta [Créditos](#créditos).
 
@@ -26,7 +26,7 @@ Es un mod de Claude Code de **código abierto**, publicado bajo la licencia [MIT
 ## Funcionalidades
 
 ### El panel de temas
-`/themes` abre el panel **Themes** al lado del chat. Arriba dice qué tema llevas puesto y su descripción, y debajo están los temas agrupados en **Live wallpapers** (fondos animados), **Color themes** (temas de color) y **Your themes** (tus temas), cada uno con su miniatura. Un clic en un tema lo aplica al momento; **Claude** devuelve los colores originales de la app. El panel se cierra con **Close** o con Escape.
+`/narsil-skin themes` abre el panel **Themes** al lado del chat. Arriba dice qué tema llevas puesto y su descripción, y debajo están los temas agrupados en **Live wallpapers** (fondos animados), **Color themes** (temas de color) y **Your themes** (tus temas), cada uno con su miniatura. Un clic en un tema lo aplica al momento; **Claude** devuelve los colores originales de la app. El panel se cierra con **Close** o con Escape.
 
 La primera vez el panel solo muestra el botón **Install extension**: es el paso que instala lo que pinta los temas (consulta [Instalación](#instalación)).
 
@@ -61,7 +61,7 @@ Pídele a Claude "hazme un tema" con una idea, una imagen o las dos. La skill `m
 También puedes crearlos a mano en `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`):
 
 - **Tema de color**: `<id>.json`, con un `<id>.css` opcional.
-- **Fondo animado**: `<id>.json` con `"wallpaper": "<id>"` y la escena en `<id>.js`. Aparece al elegirlo en `/themes`, sin reiniciar.
+- **Fondo animado**: `<id>.json` con `"wallpaper": "<id>"` y la escena en `<id>.js`. Aparece al elegirlo en `/narsil-skin themes`, sin reiniciar.
 
 Salen en **Your themes** y una actualización del mod no los borra.
 
@@ -78,13 +78,13 @@ En la app de escritorio, donde `/plugin` no funciona: abre **Settings → Plugin
 
 Después:
 
-1. Si `/themes` no sale en la lista de comandos, ejecuta `/reload-plugins` y luego `/reload-skills`.
-2. Ejecuta `/themes` en una conversación. En la página de inicio de **+ New** solo abre una conversación nueva: vuelve a ejecutarlo dentro de ella.
+1. Si `/narsil-skin` no sale en la lista de comandos, ejecuta `/reload-plugins` y luego `/reload-skills`.
+2. Ejecuta `/narsil-skin themes` en una conversación. En la página de inicio de **+ New** solo abre una conversación nueva: vuelve a ejecutarlo dentro de ella.
 3. Pulsa **Install extension**. Copia la extensión que pinta los temas en la carpeta `extensions` de la app y define `REACT_PROFILE=1`, que hace que la app la cargue:
    - **Windows**: la carpeta es `%LOCALAPPDATA%\Claude-Data\claude_<id>\extensions` en las instalaciones recientes (la de la Microsoft Store, entre ellas) y `%APPDATA%\Claude\extensions` en las demás. La variable se define para tu usuario.
    - **macOS**: la carpeta es `~/Library/Application Support/Claude/extensions`. La variable se define con `launchctl setenv` y un LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`) la vuelve a definir en cada inicio de sesión.
 4. Cierra la app del todo (en Windows, también desde la bandeja del sistema; en macOS, con Cmd+Q) y ábrela otra vez.
-5. Ejecuta `/themes` y elige un tema.
+5. Ejecuta `/narsil-skin themes` y elige un tema.
 
 Para actualizarlo a la última versión:
 
@@ -97,7 +97,7 @@ Para actualizarlo a la última versión:
 
 | Comando | Qué hace |
 | --- | --- |
-| `/narsil-skin themes` · `/themes` | Abre el panel de temas. Es la forma de volver a abrirlo si lo cierras. |
+| `/narsil-skin themes` | Abre el panel de temas. Es la forma de volver a abrirlo si lo cierras. |
 | `/narsil-skin` | Muestra la ayuda con los comandos. También responde así a un argumento que no conoce. |
 | `/narsil-skin:make-theme` | Crea un tema nuevo, de color o un fondo animado, a partir de una idea o una imagen. También puedes pedírselo a Claude con tus palabras. |
 
@@ -117,7 +117,7 @@ No es una función oficial de la app: se apoya en los mods y las extensiones que
 
 Desinstalar el plugin solo quita sus comandos. La extensión de la carpeta `extensions` se queda, así que quítala primero:
 
-1. Ejecuta `/themes` y pulsa **Remove extension**. Quita los archivos y las entradas del mod de `fmkadmapgofadopljbjfkapdkoienihi`, en la carpeta `extensions` de la app. Si ningún otro mod usa esa carpeta, también la borra junto con la variable `REACT_PROFILE` (y en macOS, el LaunchAgent). Si otro mod la usa, deja las dos.
+1. Ejecuta `/narsil-skin themes` y pulsa **Remove extension**. Quita los archivos y las entradas del mod de `fmkadmapgofadopljbjfkapdkoienihi`, en la carpeta `extensions` de la app. Si ningún otro mod usa esa carpeta, también la borra junto con la variable `REACT_PROFILE` (y en macOS, el LaunchAgent). Si otro mod la usa, deja las dos.
 2. Reinicia la app.
 3. Desinstala el plugin: en **Settings → Plugins** o con `claude plugin uninstall narsil-skin`.
 4. Opcional: quita también el marketplace, con `claude plugin marketplace remove narsil-skin` o desde **Settings → Plugins → Add → Manage marketplaces**.
@@ -164,7 +164,7 @@ claude plugin validate .
 claude plugin test .
 ```
 
-- `hooks/register.tsx`: los hooks del mod (el panel de temas, `/themes`, instalar y quitar la extensión, y las reacciones a lo que hace Claude).
+- `hooks/register.tsx`: los hooks del mod (el panel de temas, `/narsil-skin themes`, instalar y quitar la extensión, y las reacciones a lo que hace Claude).
 - `hooks/themes.ts`: la lista de temas, la lectura de tus temas y las miniaturas del panel.
 - `hooks/thumbs.ts`: las miniaturas de los fondos animados.
 - `extension/`: la extensión que pinta los temas dentro de la app (`core.js`, `engine.js` y las escenas de `extension/src/scenes/`).

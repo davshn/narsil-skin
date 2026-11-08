@@ -14,7 +14,7 @@ There are two kinds. If the person did not say which kind, explain both and ask 
 
 - **Simple theme.** Colors, a font, corner shapes, shadows, a status line, and optionally a stylesheet with
   decorations and reactions (a glow while a tool runs, a shake on an error). It is data only. It goes into the
-  person's own themes folder, shows in the `/themes` pane at once, and a mod update never removes it.
+  person's own themes folder, shows in the `/narsil-skin themes` pane at once, and a mod update never removes it.
 - **Live wallpaper.** All of the above, plus an animated ASCII scene behind the window, drawn by the extension (like
   Moonlit, Koi Pond or Lantern Night). It also goes into the person's own themes folder, with its scene as a `.js`
   file beside it, and a mod update never removes it. Tell the person two things: the scene is code that runs on their Claude page, so they should only add scene files they trust; and it takes longer to make, with a few rounds of review.
@@ -59,7 +59,7 @@ draft.
 1. Write `<id>.json`, and `<id>.css` if the theme has a stylesheet, to the person's themes folder:
    `%USERPROFILE%\.claude\narsil-skin\` on Windows, `~/.claude/narsil-skin/` on macOS. Create the folder
    if it is not there.
-2. Tell the person to run `/themes`. The pane reads the folder each time it opens, and the theme shows in the
+2. Tell the person to run `/narsil-skin themes`. The pane reads the folder each time it opens, and the theme shows in the
    "Your themes" row. A press on its name puts it on, with no restart.
 
 The mod refuses a file with a bad `id`, a missing name, or colors that are not `#rrggbb`. It also refuses an `id`
@@ -91,7 +91,7 @@ Do not change the mod's own files: the theme belongs to the person, not to the m
    Read the picture to check it shows the scene's main motifs. If the capture fails (no browser found, `no shot`,
    or a picture that does not show the scene), delete any `<id>.jpg` and go on: the tile then falls back to the
    theme's colors and `deco`, so give the theme a `deco` that hints at the scene, and tell the person.
-4. Tell the person to run `/themes` and pick the theme in the "Your themes" row. The mod copies the scene into the extension and it shows at once, with no restart.
+4. Tell the person to run `/narsil-skin themes` and pick the theme in the "Your themes" row. The mod copies the scene into the extension and it shows at once, with no restart.
 
 ## The theme file
 
