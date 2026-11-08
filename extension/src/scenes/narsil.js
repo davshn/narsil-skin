@@ -1,4 +1,4 @@
-// Narsil, a chibi sea serpent, swims the night sea: a crescent moon, jellyfish drifting up, waves at the bottom.
+// Narsil, a chibi sea serpent, swims the night sea: a crescent moon, jellyfish drifting up.
 // Her colors: a slate-blue back with gold spots, a pale belly, blue fins with gold spines, big amber eyes.
 const NARSIL = {
   B: { bg: '#3d5674', fg: '#1e2c40', a: .95 },
@@ -65,10 +65,7 @@ SCENES.narsil = {
     const d1 = Math.hypot(x - mx, y - my), d2 = Math.hypot(x - mx - 3, y - my + 1.6);
     if (d1 <= R && d2 > R * .85) return { bg: '#e8d9a0', fg: '#4a4126', a: .88 };
     if (d1 <= R + 1.5 && d2 > R * .85 + .6 && hash(x, y, 5) < .45) return { fg: '#e8d9a0', a: .22 + .12 * Math.sin(t * 2 + x) };
-    // waves along the bottom
-    const top = rows - 2.4 + .8 * Math.sin(x * .35 + t * 1.2);
-    if (Math.abs(y - top) < .5) return { ch: '~', fg: '#9cc8ff', a: .55, floor: .4 };
-    if (y > top) return { bg: '#5aaeff', fg: '#1d4d80', a: .22 };
+    // (the wave along the bottom is the theme stylesheet's, so it can swell and turn red with Claude's work)
     // specks rising through the water, and stars
     if (rising(x, y, t, .6, .006)) return { ch: '.', fg: '#9cc8ff', a: .3 };
     return twinkle(x, y, t, '#dce6fa', .014);

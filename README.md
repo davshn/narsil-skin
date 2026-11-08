@@ -38,7 +38,7 @@ Una escena dibujada con caracteres se mueve detrás del chat. Desde el panel pue
   <br><strong>Narsil</strong>
 </p>
 
-**Narsil** es el tema de la casa: Narsil, la serpiente marina de [narsil-pet](https://github.com/davshn/narsil-pet), nada de pie en el margen del chat, con el cuerpo ondulando, la aleta lateral remando y burbujas saliendo de su boca. Arriba brillan una luna creciente y las estrellas, por la derecha suben medusas y abajo corren las olas. Usa los colores de Night Sea.
+**Narsil** es el tema de la casa: Narsil, la serpiente marina de [narsil-pet](https://github.com/davshn/narsil-pet), nada de pie en el margen del chat, con el cuerpo ondulando, la aleta lateral remando y burbujas saliendo de su boca. Arriba brillan una luna creciente y las estrellas, y por la derecha suben medusas. Usa los colores y las reacciones de Night Sea: la ola de abajo crece cuando Claude usa una herramienta y se vuelve roja si falla, las estrellas destellan al terminar el turno, cruzan estrellas fugaces mientras piensa y late un borde azul cuando te espera.
 
 | | |
 |:-:|:-:|
