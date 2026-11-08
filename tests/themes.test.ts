@@ -154,3 +154,70 @@ test('/narsil-skin themes opens the same pane as /themes, and anything else show
   }
   expect(opened).toEqual(['themes', 'themes'])
 })
+
+// (Windows paths built with the separator by code, so this file holds no backslash to escape)
+const win = (...parts: string[]) => parts.join(String.fromCharCode(92))
+const slash = (p: string) => p.split(String.fromCharCode(92)).join('/')
+
+test('on Windows the pane installs into the Claude-Data folder the app reads, when there is one', async ($, on) => {
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  const local = win('C:', 'Users', 'p', 'AppData', 'Local'), dataRoot = win(local, 'Claude-Data')
+  const data = win(dataRoot, 'claude_abc'), slot = win(data, 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
+  const devtools = JSON.stringify({ name: 'React Developer Tools',
+    content_scripts: [{ matches: ['<all_urls>'], js: ['build/prepareInjection.js'] }],
+    web_accessible_resources: [{ resources: ['build/*.js'] }] })
+  const disk = new Map<string, string>([[win(slot, 'manifest.json'), devtools]])
+  const runs: string[][] = []
+  const env: Record<string, string> = { APPDATA: win('C:', 'Users', 'p', 'AppData', 'Roaming'), LOCALAPPDATA: local, USERPROFILE: win('C:', 'Users', 'p') }
+  on('env.get', ($, e) => ({ value: env[e.name] }))
+  on('fs.exists', ($, e) => ({ value: e.path === dataRoot || e.path === win(data, 'Local State') || disk.has(e.path) }))
+  on('fs.list', ($, e) => ({ value: e.path === dataRoot ? [{ name: 'claude_abc', kind: 'dir' }] : [] }))
+  on('fs.write', ($, e) => { disk.set(e.path, e.text); return { value: undefined } })
+  on('fs.read', ($, e) => {
+    if (disk.has(e.path)) return { value: disk.get(e.path)! }
+    if (slash(e.path).endsWith('/extension/manifest.json'))
+      return { value: '{"content_scripts":[{"matches":["<all_urls>"],"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}' }
+    if (slash(e.path).includes('/extension/src/')) return { value: '' }
+    throw new Error('ENOENT')
+  })
+  on('process.run', ($, e) => {
+    runs.push([...e.argv])
+    return { value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
+  })
+  await $.command.run({ command: 'themes', args: '' })
+  const bare = await $.ui.mount(PANE)
+  await bare.press({ key: 'install' })
+  await bare.unmount()
+  expect(disk.has(win(slot, 'theme.js'))).toBe(true)
+  const manifest = JSON.parse(disk.get(win(slot, 'manifest.json'))!)
+  expect(manifest.name).toBe('React Developer Tools')
+  expect(manifest.content_scripts.map((s: { js: string[] }) => s.js[0])).toEqual(['build/prepareInjection.js', 'theme.js'])
+  expect([...disk.keys()].some(k => k.includes('Roaming'))).toBe(false)
+  expect(runs).toContainEqual(['setx', 'REACT_PROFILE', '1'])
+})
+
+test('on Windows without a Claude-Data folder the pane keeps installing into AppData Roaming', async ($, on) => {
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  const roaming = win('C:', 'Users', 'p', 'AppData', 'Roaming')
+  const slot = win(roaming, 'Claude', 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
+  const disk = new Map<string, string>()
+  const env: Record<string, string> = { APPDATA: roaming, LOCALAPPDATA: win('C:', 'Users', 'p', 'AppData', 'Local'), USERPROFILE: win('C:', 'Users', 'p') }
+  on('env.get', ($, e) => ({ value: env[e.name] }))
+  on('fs.exists', ($, e) => ({ value: disk.has(e.path) }))
+  on('fs.list', () => ({ value: [] }))
+  on('fs.write', ($, e) => { disk.set(e.path, e.text); return { value: undefined } })
+  on('fs.read', ($, e) => {
+    if (disk.has(e.path)) return { value: disk.get(e.path)! }
+    if (slash(e.path).endsWith('/extension/manifest.json'))
+      return { value: '{"content_scripts":[{"matches":["<all_urls>"],"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}' }
+    if (slash(e.path).includes('/extension/src/')) return { value: '' }
+    throw new Error('ENOENT')
+  })
+  on('process.run', () => ({ value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
+  await $.command.run({ command: 'themes', args: '' })
+  const bare = await $.ui.mount(PANE)
+  await bare.press({ key: 'install' })
+  await bare.unmount()
+  expect(disk.has(win(slot, 'theme.js'))).toBe(true)
+  expect(disk.get(win(slot, 'manifest.json'))).toMatch(/"theme\.js"/)
+})

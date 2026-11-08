@@ -15,11 +15,16 @@ export const build = (extra = []) => assemble(read(new URL('core.js', src)),
   read(new URL('engine.js', src)))
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  // Claude Desktop's userData, as the mod's install finds it (Windows and macOS)
-  const userData = process.platform === 'win32' ? process.env.APPDATA
-    : process.platform === 'darwin' ? join(homedir(), 'Library', 'Application Support') : undefined
+  // Claude Desktop's userData, as the mod's install finds it (Windows and macOS): on Windows the Claude-Data folder
+  // that holds a Local State, else %APPDATA%\Claude
+  const dataRoot = process.env.LOCALAPPDATA && join(process.env.LOCALAPPDATA, 'Claude-Data')
+  const claudeData = dataRoot && existsSync(dataRoot)
+    ? readdirSync(dataRoot).filter(d => /^claude/i.test(d)).sort().map(d => join(dataRoot, d)).find(d => existsSync(join(d, 'Local State')))
+    : undefined
+  const userData = process.platform === 'win32' ? claudeData ?? (process.env.APPDATA && join(process.env.APPDATA, 'Claude'))
+    : process.platform === 'darwin' ? join(homedir(), 'Library', 'Application Support', 'Claude') : undefined
   if (!userData) throw new Error('only Windows and macOS are supported')
-  const slot = join(userData, 'Claude', 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
+  const slot = join(userData, 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
   if (!existsSync(join(slot, 'theme.js'))) throw new Error('not installed: press "Install extension" in /themes first')
   writeFileSync(join(slot, 'theme.js'), build())
   console.log(`built into ${join(slot, 'theme.js')}; restart Claude Desktop to see it`)

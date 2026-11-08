@@ -5,9 +5,11 @@ import type { Theme } from '../types'
 import { assemble, sceneModule } from '../tools/assemble.mjs'
 import { THEMES, parseUserTheme, tile } from './themes'
 
-// The React DevTools slot under Claude Desktop's userData: %APPDATA%\Claude on Windows,
-// ~/Library/Application Support/Claude on macOS. Claude Desktop loads it when REACT_PROFILE=1.
-const SLOT = ['Claude', 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi']
+// The React DevTools slot under Claude Desktop's userData. Claude Desktop loads it when REACT_PROFILE=1.
+// userData on Windows: %LOCALAPPDATA%\Claude-Data\claude_<id> on newer installs (the Store app among them), else
+// %APPDATA%\Claude; on macOS: ~/Library/Application Support/Claude.
+const SLOT = ['extensions', 'fmkadmapgofadopljbjfkapdkoienihi']
+const DATA_ROOT = 'Claude-Data'
 const MAC_SUPPORT = ['Library', 'Application Support']
 // macOS: what sets REACT_PROFILE=1 again at each login (launchctl setenv lasts until a restart)
 const AGENT = 'com.github.0toshigami.themes-for-claude'
@@ -43,10 +45,24 @@ const join = (base: string, ...parts: string[]) => [base, ...parts].join(base.in
 type Host = { os: 'windows' | 'macos'; home: string; userData: string }
 const hostOf = async ($: EngineInterface): Promise<Host | undefined> => {
   const appData = await $.env.get('APPDATA')
-  if (appData) return { os: 'windows', home: (await $.env.get('USERPROFILE')) ?? '', userData: appData }
+  if (appData) {
+    const home = (await $.env.get('USERPROFILE')) ?? ''
+    return { os: 'windows', home, userData: (await claudeData($)) ?? join(appData, 'Claude') }
+  }
   const home = await $.env.get('HOME')
-  const userData = home && join(home, ...MAC_SUPPORT)
-  return userData && (await $.fs.exists(join(userData, 'Claude'))) ? { os: 'macos', home: home!, userData } : undefined
+  const userData = home && join(home, ...MAC_SUPPORT, 'Claude')
+  return userData && (await $.fs.exists(userData)) ? { os: 'macos', home: home!, userData } : undefined
+}
+
+// The Claude-Data userData a newer Windows install keeps (the one holding its Local State), when there is one
+const claudeData = async ($: EngineInterface) => {
+  const local = await $.env.get('LOCALAPPDATA')
+  const root = local && join(local, DATA_ROOT)
+  if (!root || !(await $.fs.exists(root).catch(() => false))) return undefined
+  const dirs = (await $.fs.list(root).catch(() => []))
+    .filter(f => f.kind === 'dir' && /^claude/i.test(f.name)).map(f => join(root, f.name)).sort()
+  for (const dir of dirs) if (await $.fs.exists(join(dir, 'Local State')).catch(() => false)) return dir
+  return undefined
 }
 
 const slot = async ($: EngineInterface) => {

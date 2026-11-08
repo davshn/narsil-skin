@@ -74,7 +74,7 @@ Después:
 1. Si `/themes` no sale en la lista de comandos, ejecuta `/reload-plugins` y luego `/reload-skills`.
 2. Ejecuta `/themes` en una conversación. En la página de inicio de **+ New** solo abre una conversación nueva: vuelve a ejecutarlo dentro de ella.
 3. Pulsa **Install extension**. Copia la extensión que pinta los temas en la carpeta `extensions` de la app y define `REACT_PROFILE=1`, que hace que la app la cargue:
-   - **Windows**: la carpeta es `%APPDATA%\Claude\extensions` y la variable se define para tu usuario.
+   - **Windows**: la carpeta es `%LOCALAPPDATA%\Claude-Data\claude_<id>\extensions` en las instalaciones recientes (la de la Microsoft Store, entre ellas) y `%APPDATA%\Claude\extensions` en las demás. La variable se define para tu usuario.
    - **macOS**: la carpeta es `~/Library/Application Support/Claude/extensions`. La variable se define con `launchctl setenv` y un LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`) la vuelve a definir en cada inicio de sesión.
 4. Cierra la app del todo (en Windows, también desde la bandeja del sistema; en macOS, con Cmd+Q) y ábrela otra vez.
 5. Ejecuta `/themes` y elige un tema.
@@ -120,7 +120,9 @@ Tus temas de `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin
 Si desinstalaste el plugin primero, quita la extensión a mano. La carpeta puede tener otros mods, así que esto solo la borra, junto con la variable, cuando contiene únicamente este. En PowerShell:
 
 ```powershell
-$d = "$env:APPDATA\Claude\extensions\fmkadmapgofadopljbjfkapdkoienihi"
+$data = Get-ChildItem "$env:LOCALAPPDATA\Claude-Data" -Directory -Filter 'claude*' -ErrorAction SilentlyContinue |
+  Where-Object { Test-Path (Join-Path $_.FullName 'Local State') } | Select-Object -First 1
+$d = if ($data) { Join-Path $data.FullName 'extensions\fmkadmapgofadopljbjfkapdkoienihi' } else { "$env:APPDATA\Claude\extensions\fmkadmapgofadopljbjfkapdkoienihi" }
 if (((Get-Content "$d\manifest.json" -Raw | ConvertFrom-Json).content_scripts.js -join ',') -eq 'theme.js') {
   Remove-Item -Recurse $d; [Environment]::SetEnvironmentVariable('REACT_PROFILE', $null, 'User')
 } else { "Another mod shares $d. Delete only theme.js, theme.json and event.json, and their manifest entries." }
