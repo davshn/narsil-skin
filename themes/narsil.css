@@ -103,3 +103,6 @@ html[data-theme-state=waiting] body::after {
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-reduce-motion=true]) [data-new-page-greeting-spark] { animation: sea-bob 2.4s ease-in-out infinite alternate; }
 }
+
+/* the orange spark while Claude works, turned purple */
+[data-cds=Spark], [data-cds=WorkingMark] { filter: hue-rotate(262deg) saturate(1.3); }
