@@ -1,19 +1,37 @@
-# Claude Desktop Themes
+# Narsil Skin
 
-> **Fork notice.** This is a fork of
-> [0toshigami/claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes) by
-> [0toshigami](https://github.com/0toshigami), maintained by [davshn](https://github.com/davshn) as the base of the
-> narsil-skin mod. All original work, design and themes are credit of 0toshigami and are used under the MIT License,
-> whose original copyright notice is kept in [LICENSE](LICENSE).
+<p align="center">
+  <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-claro.svg" width="150" alt="Narsil estrenando tema (modo claro)">
+  <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-oscuro.svg" width="150" alt="Narsil estrenando tema (modo oscuro)">
+</p>
 
-Themes for Claude Desktop, applied live. Pick one from a side pane with `/themes`.
+Narsil Skin es el tercer mod de la familia de [Narsil](https://github.com/davshn/narsil-pet), junto a [Narsil Check](https://github.com/davshn/narsil-check): le cambia la piel a la app de escritorio de Claude. Aplica temas de color en vivo (colores, fuentes, esquinas y sombras) y fondos animados dibujados con caracteres que se mueven detrás del chat. Los temas se eligen desde un panel lateral con `/themes`, así que el espacio encima del prompt queda libre para Narsil.
 
-[![Switching themes with /themes in Claude Desktop](docs/demo.gif)](https://github.com/user-attachments/assets/32f4bfa8-eecc-4993-8b02-3a0960ac27c3)
+Es un *fork* de [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), de [0toshigami](https://github.com/0toshigami): todo el trabajo original, el diseño y los temas son suyos. Consulta [Créditos](#créditos).
 
-## Live ASCII wallpapers
+Es un mod de Claude Code de **código abierto**, publicado bajo la licencia [MIT](#licencia).
 
-An animated scene, drawn in characters, moves behind the chat. You can set its motion (smooth or cell by cell), its
-speed, its cell size and a backdrop behind the chat that keeps the text easy to read.
+## Índice
+
+- [Funcionalidades](#funcionalidades)
+- [Instalación](#instalación)
+- [Comandos](#comandos)
+- [Sistemas compatibles](#sistemas-compatibles)
+- [Desinstalación](#desinstalación)
+- [Seguridad](#seguridad)
+- [Desarrollo](#desarrollo)
+- [Créditos](#créditos)
+- [Licencia](#licencia)
+
+## Funcionalidades
+
+### El panel de temas
+`/themes` abre el panel **Themes** al lado del chat. Arriba dice qué tema llevas puesto y su descripción, y debajo están los temas agrupados en **Live wallpapers** (fondos animados), **Color themes** (temas de color) y **Your themes** (tus temas), cada uno con su miniatura. Un clic en un tema lo aplica al momento; **Claude** devuelve los colores originales de la app. El panel se cierra con **Close** o con Escape.
+
+La primera vez el panel solo muestra el botón **Install extension**: es el paso que instala lo que pinta los temas (consulta [Instalación](#instalación)).
+
+### Fondos animados
+Una escena dibujada con caracteres se mueve detrás del chat. Desde el panel puedes cambiar su movimiento (suave o celda a celda), su velocidad, el tamaño de las celdas y la opacidad del fondo que hay detrás del texto para que se lea bien.
 
 | | | |
 |:-:|:-:|:-:|
@@ -22,96 +40,82 @@ speed, its cell size and a backdrop behind the chat that keeps the text easy to 
 | <img src="docs/lantern-night.gif" alt="Lantern Night"><br>**Lantern Night** | <img src="docs/fireflies.gif" alt="Fireflies"><br>**Fireflies** | <img src="docs/neon-rain.gif" alt="Neon Rain"><br>**Neon Rain** |
 | <img src="docs/sakura-dusk.gif" alt="Sakura Dusk"><br>**Sakura Dusk** | <img src="docs/snow-cabin.gif" alt="Snow Cabin"><br>**Snow Cabin** | <img src="docs/star-voyage.gif" alt="Star Voyage"><br>**Star Voyage** |
 
-## Color themes
-
-Each theme changes colors, fonts, corner shapes and shadows. Some react to tool calls: a glow while a tool runs, a
-shake on an error.
+### Temas de color
+Cada tema cambia los colores, las fuentes, la forma de las esquinas y las sombras. Algunos reaccionan a lo que hace Claude: brillan mientras corre una herramienta y tiemblan cuando falla.
 
 | | | | | |
 |:-:|:-:|:-:|:-:|:-:|
 | <img src="docs/sunset-cloud.svg" width="160" alt="Sunset Cloud"><br>**Sunset Cloud** | <img src="docs/sakura.svg" width="160" alt="Sakura"><br>**Sakura** | <img src="docs/terminal.svg" width="160" alt="Terminal"><br>**Terminal** | <img src="docs/night-sea.svg" width="160" alt="Night Sea"><br>**Night Sea** | <img src="docs/old-paper.svg" width="160" alt="Old Paper"><br>**Old Paper** |
 
-## Make your own
+### Tus propios temas
+Pídele a Claude "hazme un tema" con una idea, una imagen o las dos. La skill `make-theme` te pregunta qué tipo quieres, te enseña un borrador como Artifact para que lo apruebes y después lo construye.
 
-Ask Claude to "make me a theme", with a text idea, a picture, or both. The `make-theme` skill asks which kind you
-want, drafts it as an Artifact for you to approve, and then builds it.
+También puedes crearlos a mano en `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`):
 
-[![Claude making a new theme with the make-theme skill](docs/make-theme-demo.gif)](https://github.com/user-attachments/assets/128fd8a4-7061-43d6-8a54-7e9948964825)
+- **Tema de color**: `<id>.json`, con un `<id>.css` opcional.
+- **Fondo animado**: `<id>.json` con `"wallpaper": "<id>"` y la escena en `<id>.js`. Aparece al elegirlo en `/themes`, sin reiniciar.
 
-## Before you install
+Salen en **Your themes** y una actualización del mod no los borra.
 
-The mod works in the Claude Desktop app's Code tab.
+## Instalación
 
-> **Unofficial.** This mod is built on the mods, extensions and other parts that Claude Desktop already has. It is
-> not a supported theming feature, so a future update of Claude Desktop can break it.
->
-> **Windows and macOS.** Linux is not done yet. Help from the community is welcome: issues and pull requests for it.
-
-This is a community mod. It is not made or endorsed by Anthropic. Claude, Claude Desktop, Claude Code and Clawd
-belong to Anthropic.
-
-## Install
-
-In Claude Desktop: open **Settings → Plugins**, press **Add → Add marketplace**, enter
-`https://github.com/0toshigami/claude-desktop-themes.git`, then install **themes-for-claude** from it.
-
-Or, at the prompt of a Claude Code terminal session:
+Necesitas la app de escritorio de Claude, en la pestaña **Code**. Dentro de Claude Code, ejecuta:
 
 ```
-/plugin install themes-for-claude --marketplace 0toshigami/claude-desktop-themes
+/plugin marketplace add davshn/narsil-skin
+/plugin install themes-for-claude@claude-desktop-themes
 ```
 
-Answer `y` to add the marketplace, then pick a scope.
+En la app de escritorio, donde `/plugin` no funciona: abre **Settings → Plugins**, pulsa **Add → Add marketplace**, escribe `davshn/narsil-skin` e instala **themes-for-claude**.
 
-From a shell:
+Después:
 
-```bash
-claude plugin install themes-for-claude --marketplace 0toshigami/claude-desktop-themes
+1. Si `/themes` no sale en la lista de comandos, ejecuta `/reload-plugins` y luego `/reload-skills`.
+2. Ejecuta `/themes` en una conversación. En la página de inicio de **+ New** solo abre una conversación nueva: vuelve a ejecutarlo dentro de ella.
+3. Pulsa **Install extension**. Copia la extensión que pinta los temas en la carpeta `extensions` de la app y define `REACT_PROFILE=1`, que hace que la app la cargue:
+   - **Windows**: la carpeta es `%APPDATA%\Claude\extensions` y la variable se define para tu usuario.
+   - **macOS**: la carpeta es `~/Library/Application Support/Claude/extensions`. La variable se define con `launchctl setenv` y un LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`) la vuelve a definir en cada inicio de sesión.
+4. Cierra la app del todo (en Windows, también desde la bandeja del sistema; en macOS, con Cmd+Q) y ábrela otra vez.
+5. Ejecuta `/themes` y elige un tema.
+
+Para actualizarlo a la última versión:
+
+```
+/plugin marketplace update claude-desktop-themes
+/plugin update themes-for-claude@claude-desktop-themes
 ```
 
-## First use
+## Comandos
 
-1. If `/themes` does not show in the command list (often only `/make-theme` shows just after the install), type
-   `/reload-plugins` and then `/reload-skills`.
-2. In a Claude Code session in Claude Desktop, type `/themes`. The Themes pane opens at the side of the chat.
-   `/themes` works only inside a session. On the start page of **+ New**, typing `/themes` only starts a new
-   session; type `/themes` again in that session to open the pane.
-3. The first time, the pane shows only an **Install extension** button. Press it. It copies the extension that
-   paints the themes into Claude Desktop's `extensions` folder and sets `REACT_PROFILE=1`, which makes Claude Desktop
-   load it:
-   - Windows: the folder is `%APPDATA%\Claude\extensions`, and the variable is set for your Windows account.
-   - macOS: the folder is `~/Library/Application Support/Claude/extensions`. The variable is set with
-     `launchctl setenv`, and a LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`)
-     sets it again at each login.
-4. Quit Claude Desktop fully (Windows: also from the system tray; macOS: Cmd+Q) and open it again.
-5. Type `/themes` again and press a theme's name to put it on. Press **Claude** to go back to Claude's own colors.
+| Comando | Qué hace |
+| --- | --- |
+| `/themes` | Abre el panel de temas. Es la forma de volver a abrirlo si lo cierras. |
+| `/make-theme` | Crea un tema nuevo, de color o un fondo animado, a partir de una idea o una imagen. |
 
-## Your own themes
+## Sistemas compatibles
 
-- **Simple themes** go into `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`) as
-  `<id>.json`, with an optional `<id>.css`.
-  They show in the pane's "Your themes" row, and an update of the mod does not remove them.
-- **Live wallpapers** go into the same folder: `<id>.json` with `"wallpaper": "<id>"`, and the scene as `<id>.js`.
-  Pick it in `/themes` and it shows at once, with no restart.
+Los temas los pinta una extensión dentro de la app de escritorio, así que solo se ven allí:
 
-## Uninstall
+| | App de escritorio | Terminal, VS Code y app móvil |
+| --- | --- | --- |
+| Panel de temas | Sí | El panel se dibuja, pero no hay nada que pintar |
+| Temas de color y fondos animados | Sí, en Windows y macOS | No |
+| Linux | Todavía no | No |
 
-Uninstalling the plugin removes only its commands. The extension in `%APPDATA%` stays, so remove it first:
+No es una función oficial de la app: se apoya en los mods y las extensiones que la app ya tiene, así que una actualización de la app puede romperlo.
 
-1. Type `/themes` and press **Remove extension**. It takes the mod's files and entries out of
-   `fmkadmapgofadopljbjfkapdkoienihi` in Claude Desktop's `extensions` folder. If no other mod uses that folder, it
-   also removes the folder and the `REACT_PROFILE` variable (on macOS, the LaunchAgent too). If another mod uses the
-   folder, it keeps both.
-2. Restart Claude Desktop.
-3. Uninstall the plugin: in **Settings → Plugins**, or with `claude plugin uninstall themes-for-claude`.
-4. Optional: remove the marketplace too, which deletes its copy in `%USERPROFILE%\.claude\plugins\marketplaces`. Use
-   **Settings → Plugins → Add → Manage marketplaces**, or `claude plugin marketplace remove claude-desktop-themes`.
+## Desinstalación
 
-Your own themes in `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`) stay. Delete
-that folder if you do not want them.
+Desinstalar el plugin solo quita sus comandos. La extensión de la carpeta `extensions` se queda, así que quítala primero:
 
-If you uninstalled the plugin first, remove the extension by hand in PowerShell. The folder can hold other mods
-too, so this deletes the folder and the variable only when the folder holds this mod alone:
+1. Ejecuta `/themes` y pulsa **Remove extension**. Quita los archivos y las entradas del mod de `fmkadmapgofadopljbjfkapdkoienihi`, en la carpeta `extensions` de la app. Si ningún otro mod usa esa carpeta, también la borra junto con la variable `REACT_PROFILE` (y en macOS, el LaunchAgent). Si otro mod la usa, deja las dos.
+2. Reinicia la app.
+3. Desinstala el plugin: en **Settings → Plugins** o con `claude plugin uninstall themes-for-claude`.
+4. Opcional: quita también el marketplace, con `claude plugin marketplace remove claude-desktop-themes` o desde **Settings → Plugins → Add → Manage marketplaces**.
+
+Tus temas de `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`) se quedan. Borra esa carpeta si no los quieres.
+
+Si desinstalaste el plugin primero, quita la extensión a mano. La carpeta puede tener otros mods, así que esto solo la borra, junto con la variable, cuando contiene únicamente este. En PowerShell:
 
 ```powershell
 $d = "$env:APPDATA\Claude\extensions\fmkadmapgofadopljbjfkapdkoienihi"
@@ -120,7 +124,7 @@ if (((Get-Content "$d\manifest.json" -Raw | ConvertFrom-Json).content_scripts.js
 } else { "Another mod shares $d. Delete only theme.js, theme.json and event.json, and their manifest entries." }
 ```
 
-On macOS, in Terminal:
+En macOS, en la Terminal:
 
 ```bash
 d="$HOME/Library/Application Support/Claude/extensions/fmkadmapgofadopljbjfkapdkoienihi"
@@ -131,19 +135,45 @@ if [ "$(js content_scripts)/$(js content_scripts.0.js)/$(js content_scripts.0.js
 else echo "Another mod shares $d. Delete only theme.js, theme.json and event.json, and their manifest entries."; fi
 ```
 
-## Safety
+## Seguridad
 
-A theme's stylesheet goes on your logged-in Claude page, so the extension refuses any stylesheet that loads something
-from outside it: no `@import`, and no `url()` except `data:`. A theme's `.json` and `.css` are data only.
+La hoja de estilos de un tema se aplica a tu página de Claude con la sesión iniciada, así que la extensión rechaza cualquier hoja que cargue algo de fuera: nada de `@import` ni de `url()`, salvo `data:`. El `.json` y el `.css` de un tema son solo datos.
 
-A live wallpaper's scene (`<id>.js`) is code, and it runs on your logged-in Claude page. Keep only scene files that
-you made or that you trust, the same as any other code you run.
+La escena de un fondo animado (`<id>.js`) es código y se ejecuta en tu página de Claude con la sesión iniciada. Guarda solo escenas que hayas hecho tú o en las que confíes, como con cualquier otro código.
 
-## Thanks
+## Desarrollo
 
-Thanks to [@handsher_NGU](https://x.com/handsher_NGU/status/2115618341675319417/video/1), whose post gave the idea
-for this mod.
+Narsil Skin es de código abierto y las contribuciones son bienvenidas: abre un *issue* o un *pull request* en [GitHub](https://github.com/davshn/narsil-skin). Las mejoras que sirvan a todos se agradecen también en el [proyecto original](https://github.com/0toshigami/claude-desktop-themes).
 
-## License
+Para trabajar sobre una copia local, añade su carpeta como marketplace; los cambios llegan con `/reload-plugins`, sin reinstalar:
 
-MIT
+```
+claude plugin marketplace add <ruta-a-tu-copia>
+claude plugin validate .
+claude plugin test .
+```
+
+- `hooks/register.tsx`: los hooks del mod (el panel de temas, `/themes`, instalar y quitar la extensión, y las reacciones a lo que hace Claude).
+- `hooks/themes.ts`: la lista de temas, la lectura de tus temas y las miniaturas del panel.
+- `hooks/thumbs.ts`: las miniaturas de los fondos animados.
+- `extension/`: la extensión que pinta los temas dentro de la app (`core.js`, `engine.js` y las escenas de `extension/src/scenes/`).
+- `themes/`: las hojas de estilos de los temas de color, con la base común en `_base.css` y `_wallpaper.css`.
+- `skills/make-theme/`: la skill que crea temas nuevos.
+- `tools/`: el montaje de la extensión y la captura de las miniaturas.
+- `tests/`: los tests.
+
+## Créditos
+
+Narsil Skin es un *fork* de [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), creado por [0toshigami](https://github.com/0toshigami). Los temas, los fondos animados, la extensión y la skill `make-theme` son obra suya. Este fork lo mantiene [davshn](https://github.com/davshn), que cambió el selector de temas a un panel lateral para dejar libre el espacio encima del prompt.
+
+Gracias también a [@handsher_NGU](https://x.com/handsher_NGU/status/2115618341675319417/video/1), cuya publicación dio la idea del mod original.
+
+Es un mod de la comunidad: no lo ha hecho ni lo respalda Anthropic. Claude, Claude Desktop, Claude Code y Clawd son de Anthropic.
+
+## Licencia
+
+Narsil Skin se publica bajo la [licencia MIT](LICENSE), la misma del proyecto original, cuyo aviso de copyright se conserva en [LICENSE](LICENSE).
+
+En resumen: puedes usarlo, copiarlo, modificarlo y distribuirlo libremente, también en proyectos cerrados, siempre que mantengas el aviso de copyright y el texto de la licencia. Se distribuye sin ninguna garantía.
+
+Copyright © 2026 0toshigami
