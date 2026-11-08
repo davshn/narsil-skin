@@ -6,7 +6,7 @@
 > narsil-skin mod. All original work, design and themes are credit of 0toshigami and are used under the MIT License,
 > whose original copyright notice is kept in [LICENSE](LICENSE).
 
-Themes for Claude Desktop, applied live. Pick one from a strip above the prompt with `/themes`.
+Themes for Claude Desktop, applied live. Pick one from a side pane with `/themes`.
 
 [![Switching themes with /themes in Claude Desktop](docs/demo.gif)](https://github.com/user-attachments/assets/32f4bfa8-eecc-4993-8b02-3a0960ac27c3)
 
@@ -73,10 +73,10 @@ claude plugin install themes-for-claude --marketplace 0toshigami/claude-desktop-
 
 1. If `/themes` does not show in the command list (often only `/make-theme` shows just after the install), type
    `/reload-plugins` and then `/reload-skills`.
-2. In a Claude Code session in Claude Desktop, type `/themes`. The theme strip opens above the prompt.
+2. In a Claude Code session in Claude Desktop, type `/themes`. The Themes pane opens at the side of the chat.
    `/themes` works only inside a session. On the start page of **+ New**, typing `/themes` only starts a new
-   session; type `/themes` again in that session to open the strip.
-3. The first time, the strip shows only an **Install extension** button. Press it. It copies the extension that
+   session; type `/themes` again in that session to open the pane.
+3. The first time, the pane shows only an **Install extension** button. Press it. It copies the extension that
    paints the themes into Claude Desktop's `extensions` folder and sets `REACT_PROFILE=1`, which makes Claude Desktop
    load it:
    - Windows: the folder is `%APPDATA%\Claude\extensions`, and the variable is set for your Windows account.
@@ -90,7 +90,7 @@ claude plugin install themes-for-claude --marketplace 0toshigami/claude-desktop-
 
 - **Simple themes** go into `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`) as
   `<id>.json`, with an optional `<id>.css`.
-  They show in the strip's "Your themes" row, and an update of the mod does not remove them.
+  They show in the pane's "Your themes" row, and an update of the mod does not remove them.
 - **Live wallpapers** go into the same folder: `<id>.json` with `"wallpaper": "<id>"`, and the scene as `<id>.js`.
   Pick it in `/themes` and it shows at once, with no restart.
 

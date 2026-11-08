@@ -31,7 +31,9 @@ const cell = atom({ plugin: 'themes-for-claude', key: 'cell' } as const, LOOK.ce
 const CELLS: Record<number, string> = { 14: 'Small', 18: 'Medium', 22: 'Large' }
 const veil = atom({ plugin: 'themes-for-claude', key: 'veil' } as const, LOOK.veil)
 const VEILS = [0, .2, .4, .6, .8]
-const isStripOpen = atom({ plugin: 'themes-for-claude', key: 'isStripOpen' } as const, false)
+// The picker is a side pane (not a strip above the prompt), so it leaves the prompt to other mods
+const PANE = 'themes'
+const openPane = ($: EngineInterface) => $.ui.open({ id: PANE, title: 'Themes', focus: true, closeOnEscape: true })
 
 // Paths join with the separator the base path already uses: Windows paths hold a backslash, macOS ones never do
 const join = (base: string, ...parts: string[]) => [base, ...parts].join(base.includes('\\') ? '\\' : '/')
@@ -299,12 +301,11 @@ export const register: Register = on => {
     await check($).catch(() => {})
     await loadMine($).catch(() => {})
     await rebuild($).catch(() => {})
-    const open = await update($, isStripOpen, o => !o)
-    return { text: open ? 'Theme strip opened above the prompt.' : 'Theme strip closed.' }
+    const opened = await openPane($)
+    return { text: opened.isPlaced ? 'Themes opened in the side pane.' : `Themes pane not shown: ${opened.reason}` }
   })
 
-  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    if (e.props.hasSurvey || !(await read($, isStripOpen))) return next(e)
+  on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const els = $.ui.resolve(e)
     const { Box, Text, Button } = els
     const Svg = 'Svg' in els ? els.Svg : undefined
@@ -339,7 +340,7 @@ export const register: Register = on => {
           <Box flexDirection="row" gap={1}>
             {stage === 'missing' ? null
               : <Button key="remove" label="Remove extension" dimColor onPress={() => remove($)} />}
-            <Button key="close" role="dismiss" label="Close" onPress={() => update($, isStripOpen, () => false)} />
+            <Button key="close" role="dismiss" label="Close" onPress={() => $.ui.close({ id: PANE })} />
           </Box>
         </Box>
         {stage === 'missing' ? (

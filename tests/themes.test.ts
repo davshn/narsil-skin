@@ -43,8 +43,19 @@ test('removing takes out only our entries from a shared slot, and the whole slot
   expect(withoutOurs({ content_scripts: [{ js: ['theme.js'] }], web_accessible_resources: war })).toBeUndefined()
 })
 
-test('the strip above the prompt shows only once opened, a button per theme, and closes', async ($, on) => {
+const PANE = {
+  plugin: 'themes-for-claude',
+  surface: 'desktop',
+  component: 'Pane',
+  requestId: 'themes',
+  props: { title: 'Themes', isFocused: false, bodyColumns: 60, placement: 'dock', scroll: { offset: 0, bodyRows: 40 }, view: {} },
+} as const
+
+test('/themes opens the side pane, a button per theme, and Close closes it', async ($, on) => {
   on('ui.render', { component: 'AbovePrompt' }, ($, e) => $.ui.resolve(e).Box({}))
+  const opened: string[] = [], closed: string[] = []
+  on('ui.open', ($, e) => { opened.push(e.id); return { value: { isPlaced: true } } })
+  on('ui.close', ($, e) => { closed.push(e.id); return { value: undefined } })
   // the extension is copied and Claude Desktop restarted once `restarted` is true
   let restarted = false
   on('env.get', ($, e) =>
@@ -54,31 +65,32 @@ test('the strip above the prompt shows only once opened, a button per theme, and
     throw new Error('ENOENT')
   })
   const props = { hasSurvey: false, isWorking: false, maxRows: 40, columns: 100 }
-  const shut = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
-  expect(await shut.find({ key: 'close' })).toBeUndefined()
-  await shut.unmount()
-  await $.command.run({ command: 'themes' })
-  const bare = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
+  const result = await $.command.run({ command: 'themes' })
+  expect(result.text).toMatch(/side pane/)
+  expect(opened).toEqual(['themes'])
+  // nothing is drawn above the prompt any more
+  const band = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
+  expect(await band.find({ key: 'close' })).toBeUndefined()
+  expect(await band.find({ key: 'install' })).toBeUndefined()
+  await band.unmount()
+  const bare = await $.ui.mount(PANE)
   expect(await bare.find({ key: 'install' })).toBeDefined()
   for (const t of THEMES) expect(await bare.find({ key: `use-${t.id}` })).toBeUndefined()
   await bare.unmount()
   restarted = true
   await $.command.run({ command: 'themes' })
-  await $.command.run({ command: 'themes' })
-  const ui = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
+  const ui = await $.ui.mount(PANE)
   expect(await ui.find({ key: 'install' })).toBeUndefined()
   expect(await ui.find({ key: 'remove' })).toBeDefined()
   for (const t of THEMES) expect(await ui.find({ key: `use-${t.id}` })).toBeDefined()
   await ui.press({ key: 'close' })
   await ui.unmount()
-  const after = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
-  expect(await after.find({ key: 'close' })).toBeUndefined()
-  await after.unmount()
+  expect(closed).toEqual(['themes'])
 })
 
 
-test('on macOS the strip installs into Application Support and sets REACT_PROFILE with launchctl, and removes both', async ($, on) => {
-  on('ui.render', { component: 'AbovePrompt' }, ($, e) => $.ui.resolve(e).Box({}))
+test('on macOS the pane installs into Application Support and sets REACT_PROFILE with launchctl, and removes both', async ($, on) => {
+  on('ui.open', () => ({ value: { isPlaced: true } }))
   const home = '/Users/p', support = `${home}/Library/Application Support`
   const slot = `${support}/Claude/extensions/fmkadmapgofadopljbjfkapdkoienihi`
   const agent = `${home}/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`
@@ -106,7 +118,7 @@ test('on macOS the strip installs into Application Support and sets REACT_PROFIL
   const props = { hasSurvey: false, isWorking: false, maxRows: 40, columns: 100 }
 
   await $.command.run({ command: 'themes' })
-  const bare = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
+  const bare = await $.ui.mount(PANE)
   await bare.press({ key: 'install' })
   await bare.unmount()
   expect(disk.has(`${slot}/theme.js`)).toBe(true)
@@ -114,7 +126,7 @@ test('on macOS the strip installs into Application Support and sets REACT_PROFIL
   expect(disk.get(agent)).toMatch(/<string>REACT_PROFILE<\/string><string>1<\/string>/)
   expect(runs).toContainEqual(['launchctl', 'setenv', 'REACT_PROFILE', '1'])
 
-  const ui = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
+  const ui = await $.ui.mount(PANE)
   expect((await ui.find({ type: 'Text', text: /Cmd\+Q/ }))?.text).toMatch(/Quit Claude Desktop fully \(Cmd\+Q\)/)
   await ui.press({ key: 'remove' })
   await ui.unmount()

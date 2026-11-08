@@ -14,7 +14,7 @@ There are two kinds. If the person did not say which kind, explain both and ask 
 
 - **Simple theme.** Colors, a font, corner shapes, shadows, a status line, and optionally a stylesheet with
   decorations and reactions (a glow while a tool runs, a shake on an error). It is data only. It goes into the
-  person's own themes folder, shows in the `/themes` strip at once, and a mod update never removes it.
+  person's own themes folder, shows in the `/themes` pane at once, and a mod update never removes it.
 - **Live wallpaper.** All of the above, plus an animated ASCII scene behind the window, drawn by the extension (like
   Moonlit, Koi Pond or Lantern Night). It also goes into the person's own themes folder, with its scene as a `.js`
   file beside it, and a mod update never removes it. Tell the person two things: the scene is code that runs on their Claude page, so they should only add scene files they trust; and it takes longer to make, with a few rounds of review.
@@ -59,7 +59,7 @@ draft.
 1. Write `<id>.json`, and `<id>.css` if the theme has a stylesheet, to the person's themes folder:
    `%USERPROFILE%\.claude\themes-for-claude\` on Windows, `~/.claude/themes-for-claude/` on macOS. Create the folder
    if it is not there.
-2. Tell the person to run `/themes`. The strip reads the folder each time it opens, and the theme shows in the
+2. Tell the person to run `/themes`. The pane reads the folder each time it opens, and the theme shows in the
    "Your themes" row. A press on its name puts it on, with no restart.
 
 The mod refuses a file with a bad `id`, a missing name, or colors that are not `#rrggbb`. It also refuses an `id`
@@ -78,7 +78,7 @@ Do not change the mod's own files: the theme belongs to the person, not to the m
    keeps in the chat column. A scene can have `size`: the largest cell size in pixels.
 2. Write the theme as `<id>.json` beside it, with `"wallpaper": "<id>"` (the theme's own id: the mod refuses any
    other) and the `wall-*` vars that `live()` in `hooks/themes.ts` sets.
-3. Make its strip tile, a picture of the scene, as `<id>.jpg` beside it (without it the tile is drawn from the
+3. Make its pane tile, a picture of the scene, as `<id>.jpg` beside it (without it the tile is drawn from the
    theme's colors and `deco`, and does not show the scene). Use the same `--start` as the approved draft:
    ```bash
    node "<this skill's folder>/draft.mjs" --theme "<themes folder>/<id>.json" --scene "<themes folder>/<id>.js" --start 20 --bare --out draft/<id>-tile.html
