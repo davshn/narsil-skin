@@ -16,20 +16,20 @@ const BY_HAND = {
   windows: 'Set the user environment variable REACT_PROFILE=1 by hand',
   macos: 'Run launchctl setenv REACT_PROFILE 1 in Terminal',
 } as const
-const current = atom({ plugin: 'themes-for-claude', key: 'current' } as const, 'claude')
+const current = atom({ plugin: 'narsil-skin', key: 'current' } as const, 'claude')
 // missing: no extension; restart: copied, but Claude Desktop has not loaded it yet
 type Setup = 'missing' | 'restart' | 'ready'
-const setup = atom({ plugin: 'themes-for-claude', key: 'setup' } as const, 'missing' as Setup)
+const setup = atom({ plugin: 'narsil-skin', key: 'setup' } as const, 'missing' as Setup)
 type Motion = 'smooth' | 'grid'
 type Look = { motion: Motion; speed: number; cell: number; veil: number }
 const LOOK: Look = { motion: 'grid', speed: 4, cell: 14, veil: .4 }
-const motion = atom({ plugin: 'themes-for-claude', key: 'motion' } as const, LOOK.motion)
+const motion = atom({ plugin: 'narsil-skin', key: 'motion' } as const, LOOK.motion)
 const MOTIONS: Record<Motion, string> = { smooth: 'Smooth', grid: 'Cell by cell' }
-const speed = atom({ plugin: 'themes-for-claude', key: 'speed' } as const, LOOK.speed)
+const speed = atom({ plugin: 'narsil-skin', key: 'speed' } as const, LOOK.speed)
 const SPEEDS = [1, 2, 4, 8, 16]
-const cell = atom({ plugin: 'themes-for-claude', key: 'cell' } as const, LOOK.cell)
+const cell = atom({ plugin: 'narsil-skin', key: 'cell' } as const, LOOK.cell)
 const CELLS: Record<number, string> = { 14: 'Small', 18: 'Medium', 22: 'Large' }
-const veil = atom({ plugin: 'themes-for-claude', key: 'veil' } as const, LOOK.veil)
+const veil = atom({ plugin: 'narsil-skin', key: 'veil' } as const, LOOK.veil)
 const VEILS = [0, .2, .4, .6, .8]
 // The picker is a side pane (not a strip above the prompt), so it leaves the prompt to other mods
 const PANE = 'themes'
@@ -76,7 +76,7 @@ const statusOf = (t: Theme | undefined, kind: 'idle' | 'tool' | 'error' | 'done'
   t?.status?.[kind].split('{tool}').join(tool)
 
 let mine: Theme[] = []
-const MINE = ['.claude', 'themes-for-claude']
+const MINE = ['.claude', 'narsil-skin']
 const mineDir = async ($: EngineInterface) => {
   const h = await hostOf($)
   return h?.home ? join(h.home, ...MINE) : undefined

@@ -143,13 +143,13 @@ const paint = t => {
       draw(wall); // (under reduced motion no frame loop runs to show the new settings)
     }
   } catch (err) {
-    console.warn('themes-for-claude: the wallpaper failed', err);
+    console.warn('narsil-skin: the wallpaper failed', err);
   }
   document.getElementById('desktop-theme')?.remove();
   const vars = varsOf(t), css = t.css ?? '';
   mode = ok(t.bg) && ok(t.text) && ok(t.accent) ? (luma(rgb(t.bg)) > .5 ? 'light' : 'dark') : undefined;
   syncMode();
-  if (css && !safe(css)) console.warn('themes-for-claude: the theme\'s css was refused (it loads from outside the page)');
+  if (css && !safe(css)) console.warn('narsil-skin: the theme\'s css was refused (it loads from outside the page)');
   const text = (vars.length ? `*{${vars.map(([k, v]) => `--${k}:${v} !important`).join(';')}}\n` : '') + (safe(css) ? css : '');
   if (typeof t.id === 'string' && /^[a-z0-9-]{1,40}$/.test(t.id) && text) root.dataset.theme = t.id;
   else delete root.dataset.theme;
@@ -185,7 +185,7 @@ const loadScene = async path => {
   try {
     await import(chrome.runtime.getURL(path));
   } catch (err) {
-    console.warn('themes-for-claude: cannot load the scene', path, err);
+    console.warn('narsil-skin: cannot load the scene', path, err);
   }
 };
 
@@ -195,7 +195,7 @@ const tickTheme = async () => {
   try {
     text = await read('theme.json');
   } catch (err) {
-    if (!warned) console.warn('themes-for-claude: cannot read theme.json', err);
+    if (!warned) console.warn('narsil-skin: cannot read theme.json', err);
     warned = true;
     return;
   }
@@ -205,9 +205,9 @@ const tickTheme = async () => {
     const t = JSON.parse(text);
     await loadScene(t.scene);
     apply(t);
-    console.log('themes-for-claude:', t.id ?? 'Claude\'s own');
+    console.log('narsil-skin:', t.id ?? 'Claude\'s own');
   } catch (err) {
-    console.warn('themes-for-claude: theme.json is not JSON', err);
+    console.warn('narsil-skin: theme.json is not JSON', err);
   }
 };
 

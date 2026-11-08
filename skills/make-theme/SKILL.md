@@ -57,7 +57,7 @@ draft.
 ### A simple theme
 
 1. Write `<id>.json`, and `<id>.css` if the theme has a stylesheet, to the person's themes folder:
-   `%USERPROFILE%\.claude\themes-for-claude\` on Windows, `~/.claude/themes-for-claude/` on macOS. Create the folder
+   `%USERPROFILE%\.claude\narsil-skin\` on Windows, `~/.claude/narsil-skin/` on macOS. Create the folder
    if it is not there.
 2. Tell the person to run `/themes`. The pane reads the folder each time it opens, and the theme shows in the
    "Your themes" row. A press on its name puts it on, with no restart.

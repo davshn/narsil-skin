@@ -1,13 +1,13 @@
 {
-  "name": "themes-for-claude",
-  "displayName": "Claude Desktop Themes",
-  "version": "0.7.1",
-  "description": "Themes for Claude Desktop, live ASCII wallpapers among them, picked from a strip above the prompt with /themes; the make-theme skill makes your own",
-  "author": { "name": "0toshigami", "url": "https://github.com/0toshigami/claude-desktop-themes" },
-  "homepage": "https://github.com/0toshigami/claude-desktop-themes",
-  "repository": "https://github.com/0toshigami/claude-desktop-themes",
+  "name": "narsil-skin",
+  "displayName": "Narsil Skin",
+  "version": "0.8.0",
+  "description": "Themes and live ASCII wallpapers for Claude Desktop, picked from a side pane with /themes; the make-theme skill makes your own. A fork of 0toshigami/claude-desktop-themes",
+  "author": { "name": "davshn", "url": "https://github.com/davshn" },
+  "homepage": "https://github.com/davshn/narsil-skin",
+  "repository": "https://github.com/davshn/narsil-skin",
   "license": "MIT",
-  "keywords": ["themes", "wallpaper", "ascii", "claude-desktop"],
+  "keywords": ["themes", "wallpaper", "ascii", "claude-desktop", "narsil"],
   "icon": "./.claude-plugin/icon.svg",
   "types": "./types/index.d.ts"
 }

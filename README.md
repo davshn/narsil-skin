@@ -50,7 +50,7 @@ Cada tema cambia los colores, las fuentes, la forma de las esquinas y las sombra
 ### Tus propios temas
 Pídele a Claude "hazme un tema" con una idea, una imagen o las dos. La skill `make-theme` te pregunta qué tipo quieres, te enseña un borrador como Artifact para que lo apruebes y después lo construye.
 
-También puedes crearlos a mano en `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`):
+También puedes crearlos a mano en `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`):
 
 - **Tema de color**: `<id>.json`, con un `<id>.css` opcional.
 - **Fondo animado**: `<id>.json` con `"wallpaper": "<id>"` y la escena en `<id>.js`. Aparece al elegirlo en `/themes`, sin reiniciar.
@@ -63,10 +63,10 @@ Necesitas la app de escritorio de Claude, en la pestaña **Code**. Dentro de Cla
 
 ```
 /plugin marketplace add davshn/narsil-skin
-/plugin install themes-for-claude@claude-desktop-themes
+/plugin install narsil-skin@narsil-skin
 ```
 
-En la app de escritorio, donde `/plugin` no funciona: abre **Settings → Plugins**, pulsa **Add → Add marketplace**, escribe `davshn/narsil-skin` e instala **themes-for-claude**.
+En la app de escritorio, donde `/plugin` no funciona: abre **Settings → Plugins**, pulsa **Add → Add marketplace**, escribe `davshn/narsil-skin` e instala **narsil-skin**.
 
 Después:
 
@@ -81,8 +81,8 @@ Después:
 Para actualizarlo a la última versión:
 
 ```
-/plugin marketplace update claude-desktop-themes
-/plugin update themes-for-claude@claude-desktop-themes
+/plugin marketplace update narsil-skin
+/plugin update narsil-skin@narsil-skin
 ```
 
 ## Comandos
@@ -110,10 +110,10 @@ Desinstalar el plugin solo quita sus comandos. La extensión de la carpeta `exte
 
 1. Ejecuta `/themes` y pulsa **Remove extension**. Quita los archivos y las entradas del mod de `fmkadmapgofadopljbjfkapdkoienihi`, en la carpeta `extensions` de la app. Si ningún otro mod usa esa carpeta, también la borra junto con la variable `REACT_PROFILE` (y en macOS, el LaunchAgent). Si otro mod la usa, deja las dos.
 2. Reinicia la app.
-3. Desinstala el plugin: en **Settings → Plugins** o con `claude plugin uninstall themes-for-claude`.
-4. Opcional: quita también el marketplace, con `claude plugin marketplace remove claude-desktop-themes` o desde **Settings → Plugins → Add → Manage marketplaces**.
+3. Desinstala el plugin: en **Settings → Plugins** o con `claude plugin uninstall narsil-skin`.
+4. Opcional: quita también el marketplace, con `claude plugin marketplace remove narsil-skin` o desde **Settings → Plugins → Add → Manage marketplaces**.
 
-Tus temas de `%USERPROFILE%\.claude\themes-for-claude\` (macOS: `~/.claude/themes-for-claude/`) se quedan. Borra esa carpeta si no los quieres.
+Tus temas de `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`) se quedan. Borra esa carpeta si no los quieres.
 
 Si desinstalaste el plugin primero, quita la extensión a mano. La carpeta puede tener otros mods, así que esto solo la borra, junto con la variable, cuando contiene únicamente este. En PowerShell:
 

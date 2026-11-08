@@ -17,6 +17,6 @@ export type Theme = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'themes-for-claude': { current: string; setup: 'missing' | 'restart' | 'ready'; motion: 'smooth' | 'grid'; speed: number; cell: number; veil: number }
+    'narsil-skin': { current: string; setup: 'missing' | 'restart' | 'ready'; motion: 'smooth' | 'grid'; speed: number; cell: number; veil: number }
   }
 }

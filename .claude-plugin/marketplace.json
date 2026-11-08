@@ -1,14 +1,14 @@
 {
-  "name": "claude-desktop-themes",
-  "owner": { "name": "0toshigami", "url": "https://github.com/0toshigami/claude-desktop-themes" },
-  "description": "Themes and live ASCII wallpapers for Claude Desktop",
+  "name": "narsil-skin",
+  "owner": { "name": "davshn", "url": "https://github.com/davshn" },
+  "description": "Themes and live ASCII wallpapers for Claude Desktop, a fork of 0toshigami/claude-desktop-themes",
   "plugins": [
     {
-      "name": "themes-for-claude",
+      "name": "narsil-skin",
       "source": "./",
       "description": "Themes and live ASCII wallpapers for Claude Desktop, picked with /themes",
       "category": "appearance",
-      "tags": ["themes", "wallpaper", "ascii", "claude-desktop"]
+      "tags": ["themes", "wallpaper", "ascii", "claude-desktop", "narsil"]
     }
   ]
 }

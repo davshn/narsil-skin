@@ -44,7 +44,7 @@ test('removing takes out only our entries from a shared slot, and the whole slot
 })
 
 const PANE = {
-  plugin: 'themes-for-claude',
+  plugin: 'narsil-skin',
   surface: 'desktop',
   component: 'Pane',
   requestId: 'themes',
@@ -69,7 +69,7 @@ test('/themes opens the side pane, a button per theme, and Close closes it', asy
   expect(result.text).toMatch(/side pane/)
   expect(opened).toEqual(['themes'])
   // nothing is drawn above the prompt any more
-  const band = await $.ui.mount({ plugin: 'themes-for-claude', surface: 'desktop', component: 'AbovePrompt', props })
+  const band = await $.ui.mount({ plugin: 'narsil-skin', surface: 'desktop', component: 'AbovePrompt', props })
   expect(await band.find({ key: 'close' })).toBeUndefined()
   expect(await band.find({ key: 'install' })).toBeUndefined()
   await band.unmount()
