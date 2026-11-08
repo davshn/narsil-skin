@@ -24,6 +24,7 @@ test('every theme has a tile the desktop takes, and Claude writes no colors', as
   expect(fileOf(THEMES[0]!)).toBe('{}')
   expect(THEMES.map(t => t.id)).toEqual(['claude', 'narsil', 'night-sea', 'moonlit', 'jellyfish'])
   expect(THEMES.find(t => t.id === 'narsil')).toMatchObject({ bg: '#0f1a2c', text: '#dce6fa', accent: '#5aaeff', wallpaper: 'narsil' })
+  expect(THEMES.find(t => t.id === 'narsil')?.vars?.['wall-sky']).toBe('#0f1a2c')
   const sea = JSON.parse(fileOf(THEMES[2]!, 'html{}'))
   expect(sea.accent).toBe('#5aaeff')
   expect(sea.css).toBe('html{}')

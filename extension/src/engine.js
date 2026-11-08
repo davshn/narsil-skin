@@ -31,11 +31,13 @@ const draw = w => {
   if (!(now - w.measured < 1000)) { w.col = column(); w.measured = now; }
   ctx.clearRect(0, 0, W, H);
   ctx.globalAlpha = 1;
-  ctx.strokeStyle = 'rgba(160, 180, 255, .05)';
-  ctx.beginPath();
-  for (let x = 0; x <= cols; x++) { ctx.moveTo(x * CELL + .5, 0); ctx.lineTo(x * CELL + .5, H); }
-  for (let y = 0; y <= rows; y++) { ctx.moveTo(0, y * CELL + .5); ctx.lineTo(W, y * CELL + .5); }
-  ctx.stroke();
+  if (scene.grid !== false) {
+    ctx.strokeStyle = 'rgba(160, 180, 255, .05)';
+    ctx.beginPath();
+    for (let x = 0; x <= cols; x++) { ctx.moveTo(x * CELL + .5, 0); ctx.lineTo(x * CELL + .5, H); }
+    for (let y = 0; y <= rows; y++) { ctx.moveTo(0, y * CELL + .5); ctx.lineTo(W, y * CELL + .5); }
+    ctx.stroke();
+  }
   if (scene.cell)
     for (let y = 0; y < rows; y++)
       for (let x = 0; x < cols; x++) {

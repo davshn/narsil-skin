@@ -6,8 +6,8 @@ export const THEMES: Theme[] = [
   // Narsil, the mascot of the narsil-pet mod, with the Night Sea palette and its soft blue shadows
   ((t: Theme) => ({ ...t, vars: { ...t.vars, 'cds-shadow-md': '0 6px 22px rgba(90, 174, 255, .12)',
     'cds-shadow-lg': '0 12px 34px rgba(90, 174, 255, .16)' } }))(
-    live('narsil', 'Narsil', 'Narsil swims the night sea under a crescent moon, jellyfish drifting up beside her',
-      ['#0f1a2c', '#dce6fa', '#5aaeff'], 'radial-gradient(120% 90% at 80% 8%, #1b2f55, #0f1a2c 55%, #0a1324)',
+    live('narsil', 'Narsil', 'The Night Sea with a crescent moon breathing over it',
+      ['#0f1a2c', '#dce6fa', '#5aaeff'], '#0f1a2c',
       'rgba(15, 26, 44, .6)', 'rgba(90, 174, 255, .3)', 'here to cut some bugs ⚔',
       { idle: '🌙 Narsil', tool: '🌊 {tool}…', error: '⚔ {tool} failed', done: '✨ done' })),
   {

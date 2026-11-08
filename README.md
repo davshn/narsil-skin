@@ -34,11 +34,11 @@ La primera vez el panel solo muestra el botón **Install extension**: es el paso
 Una escena dibujada con caracteres se mueve detrás del chat. Desde el panel puedes cambiar su movimiento (suave o celda a celda), su velocidad, el tamaño de las celdas y la opacidad del fondo que hay detrás del texto para que se lea bien.
 
 <p align="center">
-  <img src="docs/narsil.png" alt="Narsil: Narsil swimming in the night sea beside the chat, under a crescent moon, with jellyfish rising">
+  <img src="docs/narsil.png" alt="Narsil: the Night Sea background with a crescent moon at the top right of the window">
   <br><strong>Narsil</strong>
 </p>
 
-**Narsil** es el tema de la casa: Narsil, la serpiente marina de [narsil-pet](https://github.com/davshn/narsil-pet), nada de pie en el margen del chat, con el cuerpo ondulando, la aleta lateral remando y burbujas saliendo de su boca. Arriba brillan una luna creciente y las estrellas, y por la derecha suben medusas. Usa los colores y las reacciones de Night Sea: la ola de abajo crece cuando Claude usa una herramienta y se vuelve roja si falla, las estrellas destellan al terminar el turno, cruzan estrellas fugaces mientras piensa y late un borde azul cuando te espera.
+**Narsil** es el tema de la casa: el fondo de Night Sea con una luna creciente arriba a la derecha, cuya luz respira despacio. La luna es lo único de la escena que se anima. Usa los colores y las reacciones de Night Sea: la ola de abajo crece cuando Claude usa una herramienta y se vuelve roja si falla, las estrellas destellan al terminar el turno, cruzan estrellas fugaces mientras piensa y late un borde azul cuando te espera.
 
 | | |
 |:-:|:-:|

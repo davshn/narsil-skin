@@ -75,7 +75,8 @@ Do not change the mod's own files: the theme belongs to the person, not to the m
    character `{ fg, a, ch? }`, or nothing. It also has `sprites(cols, rows, t)`, which returns
    `[{ x, y, key, art, pal }]` or `[{ x, y, key, field, w, h }]`. A sprite can also have `a`, `shadow` and
    `glow: { r, color, a }`. Only an `art` sprite can have `halo`. A cell can have `floor`: the least brightness it
-   keeps in the chat column. A scene can have `size`: the largest cell size in pixels.
+   keeps in the chat column. A scene can have `size`: the largest cell size in pixels, and
+   `grid: false` to leave out the faint grid drawn behind it.
 2. Write the theme as `<id>.json` beside it, with `"wallpaper": "<id>"` (the theme's own id: the mod refuses any
    other) and the `wall-*` vars that `live()` in `hooks/themes.ts` sets.
 3. Make its pane tile, a picture of the scene, as `<id>.jpg` beside it (without it the tile is drawn from the
