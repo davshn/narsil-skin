@@ -33,19 +33,20 @@ La primera vez el panel solo muestra el botón **Install extension**: es el paso
 ### Fondos animados
 Una escena dibujada con caracteres se mueve detrás del chat. Desde el panel puedes cambiar su movimiento (suave o celda a celda), su velocidad, el tamaño de las celdas y la opacidad del fondo que hay detrás del texto para que se lea bien.
 
-| | | |
-|:-:|:-:|:-:|
-| <img src="docs/moonlit.gif" alt="Moonlit"><br>**Moonlit** | <img src="docs/clawd.gif" alt="Clawd"><br>**Clawd** | <img src="docs/cloud-drift.gif" alt="Cloud Drift"><br>**Cloud Drift** |
-| <img src="docs/honu-lagoon.gif" alt="Honu Lagoon"><br>**Honu Lagoon** | <img src="docs/koi-pond.gif" alt="Koi Pond"><br>**Koi Pond** | <img src="docs/jellyfish.gif" alt="Jellyfish"><br>**Jellyfish** |
-| <img src="docs/lantern-night.gif" alt="Lantern Night"><br>**Lantern Night** | <img src="docs/fireflies.gif" alt="Fireflies"><br>**Fireflies** | <img src="docs/neon-rain.gif" alt="Neon Rain"><br>**Neon Rain** |
-| <img src="docs/sakura-dusk.gif" alt="Sakura Dusk"><br>**Sakura Dusk** | <img src="docs/snow-cabin.gif" alt="Snow Cabin"><br>**Snow Cabin** | <img src="docs/star-voyage.gif" alt="Star Voyage"><br>**Star Voyage** |
+| | |
+|:-:|:-:|
+| <img src="docs/moonlit.gif" alt="Moonlit"><br>**Moonlit** | <img src="docs/jellyfish.gif" alt="Jellyfish"><br>**Jellyfish** |
+
+Mientras Claude piensa, la escena va tres veces más rápido, y cuando te espera aparece un borde que late.
 
 ### Temas de color
-Cada tema cambia los colores, las fuentes, la forma de las esquinas y las sombras. Algunos reaccionan a lo que hace Claude: brillan mientras corre una herramienta y tiemblan cuando falla.
+Un tema de color cambia los colores, las fuentes, la forma de las esquinas y las sombras, y reacciona a lo que hace Claude.
 
-| | | | | |
-|:-:|:-:|:-:|:-:|:-:|
-| <img src="docs/sunset-cloud.svg" width="160" alt="Sunset Cloud"><br>**Sunset Cloud** | <img src="docs/sakura.svg" width="160" alt="Sakura"><br>**Sakura** | <img src="docs/terminal.svg" width="160" alt="Terminal"><br>**Terminal** | <img src="docs/night-sea.svg" width="160" alt="Night Sea"><br>**Night Sea** | <img src="docs/old-paper.svg" width="160" alt="Old Paper"><br>**Old Paper** |
+| | |
+|:-:|:-|
+| <img src="docs/night-sea.svg" width="160" alt="Night Sea"><br>**Night Sea** | Estrellas sobre una ola lenta. La ola crece cada vez que Claude usa una herramienta y se vuelve roja si falla; las estrellas destellan al terminar el turno; mientras piensa cruzan estrellas fugaces, y cuando te espera aparece un borde azul que late. |
+
+Si tienes activado "reducir movimiento", las animaciones se apagan y solo quedan los cambios de color.
 
 ### Tus propios temas
 Pídele a Claude "hazme un tema" con una idea, una imagen o las dos. La skill `make-theme` te pregunta qué tipo quieres, te enseña un borrador como Artifact para que lo apruebes y después lo construye.
