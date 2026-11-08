@@ -8,7 +8,7 @@ export const THEMES: Theme[] = [
     'cds-shadow-lg': '0 12px 34px rgba(90, 174, 255, .16)' } }))(
     live('narsil', 'Narsil', 'The Night Sea with a crescent moon breathing over it',
       ['#0f1a2c', '#dce6fa', '#5aaeff'], '#0f1a2c',
-      'rgba(15, 26, 44, .6)', 'rgba(90, 174, 255, .3)', 'here to cut some bugs ⚔',
+      'rgba(15, 26, 44, .6)', 'rgba(90, 174, 255, .3)', 'Mar en calma, código en marcha 🌊',
       { idle: '🌙 Narsil', tool: '🌊 {tool}…', error: '⚔ {tool} failed', done: '✨ done' })),
   {
     id: 'night-sea', name: 'Night Sea', tagline: 'Stars over a slow wave, for long nights of code',

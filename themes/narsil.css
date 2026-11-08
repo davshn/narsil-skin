@@ -67,7 +67,7 @@ html[data-theme-state=waiting] body::after {
   filter: drop-shadow(0 0 6px rgba(90, 174, 255, .6));
 }
 [data-testid=start-card-clawd]::after {
-  content: "here to cut some bugs ⚔"; position: absolute; left: 0; bottom: 12px; pointer-events: none;
+  content: "Mar en calma, código en marcha 🌊"; position: absolute; left: 0; bottom: 12px; pointer-events: none;
   white-space: nowrap; font-size: 15px; color: #9cc8ff;
   max-width: calc(100% - 80px); overflow: hidden; text-overflow: ellipsis;
 }
