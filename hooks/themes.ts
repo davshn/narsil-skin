@@ -3,33 +3,13 @@ import { THUMBS } from './thumbs'
 
 export const THEMES: Theme[] = [
   { id: 'claude', name: 'Claude', tagline: "Claude's own colors" },
-  // Narsil, the mascot of the narsil-pet mod, with the Night Sea palette and its soft blue shadows
+  // Narsil, the mascot of the narsil-pet mod, with a night sea palette and its soft blue shadows
   ((t: Theme) => ({ ...t, vars: { ...t.vars, 'cds-shadow-md': '0 6px 22px rgba(90, 174, 255, .12)',
     'cds-shadow-lg': '0 12px 34px rgba(90, 174, 255, .16)' } }))(
-    live('narsil', 'Narsil', 'The Night Sea with a crescent moon breathing over it',
+    live('narsil', 'Narsil', 'A night sea with a crescent moon breathing over it',
       ['#0f1a2c', '#dce6fa', '#5aaeff'], '#0f1a2c',
       'rgba(15, 26, 44, .6)', 'rgba(90, 174, 255, .3)', 'Mar en calma, código en marcha 🌊',
       { idle: '🌙 Narsil', tool: '🌊 {tool}…', error: '⚔ {tool} failed', done: '✨ done' })),
-  {
-    id: 'night-sea', name: 'Night Sea', tagline: 'Stars over a slow wave, for long nights of code',
-    bg: '#0f1a2c', text: '#dce6fa', accent: '#5aaeff',
-    vars: {
-      'cds-radius': '8px', 'cds-radius-composer': '16px', 'cds-panel-radius': '14px',
-      'cds-shadow-md': '0 6px 22px rgba(90, 174, 255, .12)',
-      'cds-shadow-lg': '0 12px 34px rgba(90, 174, 255, .16)',
-    },
-    status: { idle: '🌙', tool: '🌊 {tool}…', error: '🌊 {tool} failed', done: '✨ done' },
-    deco: `<g fill="#dce6fa"><circle cx="90" cy="18" r="1.2"/><circle cx="170" cy="40" r="1"/><circle cx="215" cy="12" r="1.4"/></g>
-<path d="M0 128 Q30 118 60 128 T120 128 T180 128 T240 128 V140 H0 Z" fill="#5aaeff" opacity=".35"/>`,
-  },
-  live('moonlit', 'Moonlit', 'A crescent moon, drifting clouds, twinkling stars',
-    ['#0d1530', '#dbe2f5', '#d9c98f'], 'radial-gradient(120% 90% at 75% 10%, #1a2a5e, #0d1530 60%, #090f24)',
-    'rgba(22, 32, 70, .6)', 'rgba(217, 201, 143, .3)', 'a quiet night to build ☾',
-    { idle: '☾', tool: '☾ {tool}…', error: '☁ {tool} failed', done: '✦ done' }),
-  live('jellyfish', 'Jellyfish', 'Jellyfish rising through deep water, bells pulsing',
-    ['#0a1830', '#dfe7fb', '#a58cf0'], bands(.07, 'linear-gradient(#174784, #0c2b58 50%, #071a3a)'),
-    'rgba(12, 28, 58, .6)', 'rgba(165, 140, 240, .3)', 'drifting into deep work',
-    { idle: '◠', tool: '◠ {tool}…', error: '◠ {tool} failed', done: '◠ done' }),
 ]
 
 function live(id: string, name: string, tagline: string, [bg, text, accent]: [string, string, string], sky: string,
@@ -41,11 +21,6 @@ function live(id: string, name: string, tagline: string, [bg, text, accent]: [st
       'wall-sky': sky, 'wall-halo': bg, 'wall-glass': glass, 'wall-rim': rim, 'wall-greet': JSON.stringify(greet),
     },
   }
-}
-
-function bands(a: number, sky: string) {
-  const w = (k: number) => `rgba(255, 255, 255, ${+(a * k).toFixed(3)})`
-  return `linear-gradient(90deg, ${w(0)} 16%, ${w(1)} 25%, ${w(0)} 35%, ${w(0)} 66%, ${w(.7)} 77%, ${w(0)} 88%), ${sky}`
 }
 
 const mix = (a: string, b: string, k: number) =>

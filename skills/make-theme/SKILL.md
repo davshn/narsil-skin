@@ -16,7 +16,7 @@ There are two kinds. If the person did not say which kind, explain both and ask 
   decorations and reactions (a glow while a tool runs, a shake on an error). It is data only. It goes into the
   person's own themes folder, shows in the `/narsil-skin themes` pane at once, and a mod update never removes it.
 - **Live wallpaper.** All of the above, plus an animated ASCII scene behind the window, drawn by the extension (like
-  Moonlit, Koi Pond or Lantern Night). It also goes into the person's own themes folder, with its scene as a `.js`
+  Narsil). It also goes into the person's own themes folder, with its scene as a `.js`
   file beside it, and a mod update never removes it. Tell the person two things: the scene is code that runs on their Claude page, so they should only add scene files they trust; and it takes longer to make, with a few rounds of review.
 
 ## 2. Read the references
@@ -132,7 +132,7 @@ Look at `themes/*.css` in the mod for the parts a theme can style:
 - `[data-cds=AssistantMessage]`, `[data-cds=UserMessage]`, `[data-cds=ChatComposer] > .bg-surface-3`, `.dframe-sidebar`.
 - The start page: `[data-testid=start-card-clawd]`. Every built-in theme decorates it: tint or animate the Clawd
   (`> *`), draw a motif beside him (`::before`), and add a short greeting line (`::after`). Give a simple theme a
-  stylesheet with this, even when it styles nothing else. See the end of `themes/night-sea.css`.
+  stylesheet with this, even when it styles nothing else. See the start page rules in `themes/narsil.css`.
 - `html[data-theme-event=tool]`, `=error` and `=done` for 1.2 seconds after each, and
   `html[data-theme-state=thinking]` or `=waiting` while that lasts: the theme's reactions.
 - `html[data-theme-wave=waiting]` while any conversation needs an answer, `=error` after an error, and

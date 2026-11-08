@@ -34,24 +34,27 @@ La primera vez el panel solo muestra el botón **Install extension**: es el paso
 Una escena dibujada con caracteres se mueve detrás del chat. Desde el panel puedes cambiar su movimiento (suave o celda a celda), su velocidad, el tamaño de las celdas y la opacidad del fondo que hay detrás del texto para que se lea bien.
 
 <p align="center">
-  <img src="docs/narsil.png" alt="Narsil: the Night Sea background with a crescent moon at the top right of the window">
+  <img src="docs/narsil.png" alt="Narsil: a night sea background with a crescent moon at the top right of the window">
   <br><strong>Narsil</strong>
 </p>
 
-**Narsil** es el tema de la casa: el fondo de Night Sea con una luna creciente arriba a la derecha, cuya luz respira despacio. La luna es lo único de la escena que se anima. Usa los colores y las reacciones de Night Sea: la ola de abajo crece cuando Claude usa una herramienta y se vuelve roja si falla, las estrellas destellan al terminar el turno, cruzan estrellas fugaces mientras piensa y late un borde azul cuando te espera.
+**Narsil** es el tema de la casa: un mar nocturno con una luna creciente arriba a la derecha, cuya luz respira despacio. La luna es lo único de la escena que se anima. Las estrellas destellan al terminar el turno, cruzan estrellas fugaces mientras Claude piensa y late un borde azul cuando te espera.
 
-| | |
-|:-:|:-:|
-| <img src="docs/moonlit.gif" alt="Moonlit"><br>**Moonlit** | <img src="docs/jellyfish.gif" alt="Jellyfish"><br>**Jellyfish** |
+La ola de abajo resume el estado de todas tus conversaciones a la vez:
 
-Mientras Claude piensa, la escena va tres veces más rápido, y cuando te espera aparece un borde que late.
+| Ola | Cuándo |
+|:-|:-|
+| **Amarilla** | Alguna conversación necesita tu respuesta. |
+| **Roja** | Hubo un error. Se apaga cuando una herramienta vuelve a funcionar o le escribes a esa conversación. |
+| **Azul** | No hay nada pendiente. |
+| **Marea alta** | Alguna conversación está trabajando. |
+
+Si a la vez hay una conversación esperándote y un error en otra, la ola se pone amarilla.
+
+Mientras Claude piensa, la escena va tres veces más rápido.
 
 ### Temas de color
-Un tema de color cambia los colores, las fuentes, la forma de las esquinas y las sombras, y reacciona a lo que hace Claude.
-
-| | |
-|:-:|:-|
-| <img src="docs/night-sea.svg" width="160" alt="Night Sea"><br>**Night Sea** | Estrellas sobre una ola lenta. La ola crece cada vez que Claude usa una herramienta y se vuelve roja si falla; las estrellas destellan al terminar el turno; mientras piensa cruzan estrellas fugaces, y cuando te espera aparece un borde azul que late. |
+Un tema de color cambia los colores, las fuentes, la forma de las esquinas y las sombras, y puede reaccionar a lo que hace Claude. El mod solo incluye **Claude**, los colores originales de la app; puedes [crear los tuyos](#tus-propios-temas).
 
 Si tienes activado "reducir movimiento", las animaciones se apagan y solo quedan los cambios de color.
 
