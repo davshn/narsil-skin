@@ -129,15 +129,75 @@ const active = async ($: EngineInterface) => {
   const id = await read($, current)
   return id === 'claude' ? undefined : allThemes().find(t => t.id === id)
 }
-// ponytail: one event.json for every session, so the last to write wins; per-session state needs a file each
 type State = 'thinking' | 'waiting' | 'idle'
-let state: State = 'idle'
-const signal = ($: EngineInterface, kind: '' | 'tool' | 'error' | 'done', tool = '', now: State = state) => {
-  state = now
-  void (async () => {
+type Mood = { state: State; failed: boolean }
+// Every conversation reports here (sessions/<id>.json) and writes event.json for all of them, so none overwrites another.
+// BEAT refreshes the report; one older than LIVE is a conversation that closed or died
+const SESSIONS = 'sessions'
+const BEAT = 10_000
+const LIVE = 30_000
+
+// All the conversations together. Yellow beats red: it blocks work and ends when answered, while a red can linger
+export const pool = (moods: Mood[]) => {
+  const waiting = moods.some(m => m.state === 'waiting')
+  const tide = moods.some(m => m.state === 'thinking')
+  return {
+    state: (waiting ? 'waiting' : tide ? 'thinking' : 'idle') as State,
+    wave: waiting ? 'waiting' : moods.some(m => m.failed) ? 'error' : '',
+    tide,
+  }
+}
+
+// This conversation: its running turns (subagents' too), its open questions to the person, and how the last work ended
+const turns = new Set<string>()
+const asks = new Set<string>()
+let blocked = false // (its last turn closed waiting on the person)
+let failed = false
+const stateNow = (): State => (asks.size || blocked ? 'waiting' : turns.size ? 'thinking' : 'idle')
+// the text a call refused by the person or a permission rule answers with: a choice, not a failure
+const REFUSED = /doesn't want to (proceed|take this action)|^Permission to use /
+const ASKS = 'AskUserQuestion'
+const WRAP_UP = 'mcp__ccd_turn__wrap_up'
+
+const readMood = async ($: EngineInterface, path: string) => {
+  try {
+    const m = JSON.parse(String(await $.fs.read(path)))
+    return typeof m.at === 'number' && typeof m.state === 'string' ? m as Mood & { at: number } : undefined
+  } catch {
+    return undefined // (caught mid-write: the next beat reads it)
+  }
+}
+
+const isIdle = (p: ReturnType<typeof pool>) => p.state === 'idle' && !p.wave
+
+// one at a time, so this conversation's own reports stay in order
+let queue: Promise<void> = Promise.resolve()
+const publish = ($: EngineInterface, kind: '' | 'tool' | 'error' | 'done' = '', tool = '') => {
+  queue = queue.then(async () => {
     const dir = await slot($)
-    if (dir) await $.fs.write(join(dir, 'event.json'), JSON.stringify({ n: ++n, kind, tool, state, at: Date.now() }))
-  })().catch(() => {})
+    if (!dir || !(await active($))) return
+    const folder = join(dir, SESSIONS), at = Date.now(), own = `${await $.session.id()}.json`
+    await $.fs.write(join(folder, own), JSON.stringify({ state: stateNow(), failed, at }))
+    const moods: Mood[] = [], gone: string[] = []
+    for (const f of await $.fs.list(folder)) {
+      if (f.kind !== 'file' || !f.name.endsWith('.json')) continue
+      const m = await readMood($, join(folder, f.name))
+      if (m && at - m.at < LIVE) moods.push(m)
+      else if (m) gone.push(join(folder, f.name))
+    }
+    if (gone.length) {
+      const h = await hostOf($)
+      await $.process.run(h?.os === 'windows' ? ['cmd', '/c', 'del', '/q', ...gone] : ['rm', '-f', '--', ...gone]).catch(() => {})
+    }
+    const now = pool(moods), event = join(dir, 'event.json')
+    // (an idle beat rewrites only what is out of date; anything else refreshes `at`, which the page holds it up by)
+    if (!kind && isIdle(now)) {
+      const was = (await readMood($, event)) as { state: State; wave?: string; tide?: boolean } | undefined
+      if (was?.state === 'idle' && !was.wave && !was.tide) return
+    }
+    await $.fs.write(event, JSON.stringify({ n: ++n, kind, tool, ...now, at }))
+  }).catch(() => {})
+  return queue
 }
 
 const check = async ($: EngineInterface) => {
@@ -249,14 +309,16 @@ const remove = async ($: EngineInterface) => {
   let exitCode: number | null
   if (!manifest || rest) {
     if (rest) await $.fs.write(join(dir, 'manifest.json'), JSON.stringify(rest, null, 2))
-    const files = ['theme.js', ...OURS].map(f => join(dir, ...f.split('/')))
-    // (del expands the scenes/*.js pattern itself; rm takes the scene files by name, as the folder holds no other)
-    const scenes = join(dir, 'scenes')
-    const ownScenes = h.os === 'macos' && (await $.fs.exists(scenes))
-      ? (await $.fs.list(scenes)).filter(f => f.kind === 'file' && f.name.endsWith('.js')).map(f => join(scenes, f.name)) : []
+    const files = ['theme.js', ...OURS, `${SESSIONS}/*.json`].map(f => join(dir, ...f.split('/')))
+    // (del expands the *.js and *.json patterns itself; rm takes those files by name, as their folders hold no others)
+    const named: string[] = []
+    if (h.os === 'macos') for (const name of ['scenes', SESSIONS]) {
+      const folder = join(dir, name)
+      if (await $.fs.exists(folder)) named.push(...(await $.fs.list(folder)).filter(f => f.kind === 'file').map(f => join(folder, f.name)))
+    }
     ;({ exitCode } = await $.process.run(h.os === 'windows'
       ? ['cmd', '/c', 'del', '/q', ...files]
-      : ['rm', '-f', '--', ...files.filter(f => !f.endsWith('*.js')), ...ownScenes]))
+      : ['rm', '-f', '--', ...files.filter(f => !f.includes('*')), ...named]))
   } else {
     await clearProfile($, h)
     ;({ exitCode } = await $.process.run(h.os === 'windows' ? ['cmd', '/c', 'rmdir', '/s', '/q', dir] : ['rm', '-rf', dir]))
@@ -324,7 +386,16 @@ export const register: Register = on => {
       await update($, cell, () => (CELLS[saved.cell] ? saved.cell : LOOK.cell))
       await update($, veil, () => (VEILS.includes(saved.veil) ? saved.veil : LOOK.veil))
       $.ui.status(statusOf(await active($), 'idle'))
+      $.clock.every(BEAT, () => void publish($))
     } catch {}
+    return next(e)
+  })
+
+  on('session.end', async ($, e, next) => {
+    turns.clear()
+    asks.clear()
+    blocked = failed = false
+    await publish($)
     return next(e)
   })
 
@@ -404,36 +475,49 @@ export const register: Register = on => {
   })
 
   on('turn.start', async ($, e, next) => {
-    if (!e.agentId && (await active($).catch(() => undefined))) signal($, '', '', 'thinking')
+    turns.add(e.turnId)
+    if (!e.agentId) blocked = failed = false // (the person, or the conversation, moved on)
+    await publish($)
     return next(e)
   })
 
   on('tool.check', async ($, e, next) => {
     const verdict = await next(e)
-    if (verdict.decision === 'ask' && e.tool_use_id && (await active($).catch(() => undefined)))
-      signal($, '', e.tool, 'waiting')
+    if (verdict.decision === 'ask' && e.tool_use_id) {
+      asks.add(e.tool_use_id)
+      await publish($, '', e.tool)
+    }
     return verdict
   }).catch(($, e, next) => next(e))
 
   on('tool.call', async ($, e, next) => {
     const t = await active($).catch(() => undefined)
-    if (!t) return next(e)
-    signal($, 'tool', e.tool, 'thinking')
-    $.ui.status(statusOf(t, 'tool', e.tool))
-    const result = await next(e)
-    if (result.isError) {
-      signal($, 'error', e.tool)
-      $.ui.status(statusOf(t, 'error', e.tool))
+    if (e.tool === ASKS) asks.add(e.tool_use_id)
+    await publish($, 'tool', e.tool)
+    if (t) $.ui.status(statusOf(t, 'tool', e.tool))
+    let result
+    try {
+      result = await next(e)
+    } finally {
+      asks.delete(e.tool_use_id) // (answered or not, it no longer waits on the person)
     }
+    const broke = result.isError === true && !REFUSED.test(result.text ?? '')
+    if (!e.agentId && e.tool === WRAP_UP) blocked = (e as unknown as { blocked?: unknown }).blocked === true
+    if (!e.agentId && !result.deny) failed = broke
+    await publish($, broke ? 'error' : '', e.tool)
+    if (t && broke) $.ui.status(statusOf(t, 'error', e.tool))
     return result
   }).catch(($, e, next) => next(e))
 
   on('turn.complete', async ($, e, next) => {
-    const t = e.agentId ? undefined : await active($).catch(() => undefined)
-    if (t) {
-      signal($, 'done', '', 'idle')
-      $.ui.status(statusOf(t, 'done'))
+    turns.delete(e.turnId)
+    if (!e.agentId) {
+      asks.clear()
+      if (e.reason === 'error') failed = true
     }
+    await publish($, e.agentId ? '' : 'done')
+    const t = e.agentId ? undefined : await active($).catch(() => undefined)
+    if (t) $.ui.status(statusOf(t, 'done'))
     return next(e)
   })
 }

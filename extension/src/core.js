@@ -1,7 +1,8 @@
 // Content script in the React DevTools slot (loaded when REACT_PROFILE=1). Reads two files the mod writes:
 // - theme.json, each second: { id, bg, text, accent, font?, vars?, wallpaper?, scene?, motion?, speed?, cell?, veil?, css? }
-// - event.json, 3 times a second: { n, kind, tool, state, at }. A new n sets data-theme-event (tool, error, done) and
-//   data-theme-tool on <html> for 1.2 s, and data-theme-state (thinking, waiting) until the next one.
+// - event.json, 3 times a second: { n, kind, tool, state, wave, tide, at }. A new n sets data-theme-event (tool, error,
+//   done) and data-theme-tool on <html> for 1.2 s, and until the next one data-theme-state (thinking, waiting),
+//   data-theme-wave (waiting, error) and data-theme-tide (high), which sum up every conversation.
 // <html data-theme="<id>"> while a theme is on.
 const read = name => fetch(chrome.runtime.getURL(name), { cache: 'no-store' }).then(r => r.text());
 const root = document.documentElement;

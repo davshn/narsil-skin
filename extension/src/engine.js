@@ -219,11 +219,17 @@ const setState = e => {
   at = typeof e.at === 'number' ? e.at : Date.now();
   if (['thinking', 'waiting'].includes(e.state)) root.dataset.themeState = e.state;
   else delete root.dataset.themeState;
+  if (['waiting', 'error'].includes(e.wave)) root.dataset.themeWave = e.wave;
+  else delete root.dataset.themeWave;
+  if (e.tide) root.dataset.themeTide = 'high';
+  else delete root.dataset.themeTide;
 };
+const WAVE_STALE = 60 * 1000; // (the conversations refresh these every 10 s while there is anything to show)
 
 let seen, started = false, clear;
 const tickEvent = async () => {
   if (root.dataset.themeState && Date.now() - at > STALE) delete root.dataset.themeState;
+  if (Date.now() - at > WAVE_STALE) { delete root.dataset.themeWave; delete root.dataset.themeTide; }
   let e;
   try {
     e = JSON.parse(await read('event.json'));

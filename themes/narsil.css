@@ -1,5 +1,6 @@
-/* Narsil: the Night Sea reactions over her wallpaper. A wave along the bottom swells while a tool runs and turns red on
-   an error, the stars flare when a turn is done, shooting stars cross while Claude thinks, a blue rim pulses while it waits. */
+/* Narsil: the Night Sea reactions over her wallpaper. A wave along the bottom swells while any conversation works, turns
+   yellow while one needs an answer and red after an error; the stars flare when a turn is done, shooting stars cross
+   while Claude thinks, a blue rim pulses while it waits. */
 html::after {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 2147483646; opacity: .45;
   transition: opacity .4s;
@@ -18,9 +19,12 @@ html::before {
   z-index: 2147483646; opacity: .2; transition: opacity .3s, height .3s;
   background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='46'><path d='M0 22 Q50 6 100 22 T200 22 T300 22 T400 22 V46 H0 Z' fill='%235aaeff'/></svg>") repeat-x bottom / 400px 100%;
 }
-html[data-theme-event=tool]::before { opacity: .4; height: 60px; }
-html[data-theme-event=error]::before {
-  opacity: .4;
+html[data-theme-tide]::before { opacity: .4; height: 60px; }
+html[data-theme-wave]::before { opacity: .55; }
+html[data-theme-wave=waiting]::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='46'><path d='M0 22 Q50 6 100 22 T200 22 T300 22 T400 22 V46 H0 Z' fill='%23ffc94d'/></svg>");
+}
+html[data-theme-wave=error]::before {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='46'><path d='M0 22 Q50 6 100 22 T200 22 T300 22 T400 22 V46 H0 Z' fill='%23ff5a6e'/></svg>");
 }
 

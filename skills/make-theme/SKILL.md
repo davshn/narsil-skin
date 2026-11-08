@@ -135,6 +135,8 @@ Look at `themes/*.css` in the mod for the parts a theme can style:
   stylesheet with this, even when it styles nothing else. See the end of `themes/night-sea.css`.
 - `html[data-theme-event=tool]`, `=error` and `=done` for 1.2 seconds after each, and
   `html[data-theme-state=thinking]` or `=waiting` while that lasts: the theme's reactions.
+- `html[data-theme-wave=waiting]` while any conversation needs an answer, `=error` after an error, and
+  `html[data-theme-tide]` while any conversation works.
 - Respect `prefers-reduced-motion`: put every animation inside
   `@media (prefers-reduced-motion: no-preference)`.
 
