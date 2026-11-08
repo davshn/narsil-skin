@@ -89,8 +89,9 @@ Para actualizarlo a la última versión:
 
 | Comando | Qué hace |
 | --- | --- |
-| `/themes` | Abre el panel de temas. Es la forma de volver a abrirlo si lo cierras. |
-| `/make-theme` | Crea un tema nuevo, de color o un fondo animado, a partir de una idea o una imagen. |
+| `/narsil-skin themes` · `/themes` | Abre el panel de temas. Es la forma de volver a abrirlo si lo cierras. |
+| `/narsil-skin` | Muestra la ayuda con los comandos. También responde así a un argumento que no conoce. |
+| `/narsil-skin:make-theme` | Crea un tema nuevo, de color o un fondo animado, a partir de una idea o una imagen. También puedes pedírselo a Claude con tus palabras. |
 
 ## Sistemas compatibles
 

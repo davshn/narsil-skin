@@ -279,10 +279,26 @@ const nextSpeed = async ($: EngineInterface) => { await update($, speed, next(SP
 const nextCell = async ($: EngineInterface) => { await update($, cell, next(Object.keys(CELLS).map(Number))); await repick($) }
 const nextVeil = async ($: EngineInterface) => { await update($, veil, next(VEILS)); await repick($) }
 
+const HELP = [
+  'Narsil Skin commands:',
+  '  /narsil-skin themes   open the theme pane (same as /themes)',
+  '  /narsil-skin:make-theme   make your own theme from an idea or a picture',
+].join('\n')
+
+// /themes and /narsil-skin themes: refresh what the pane shows, then open it
+const showThemes = async ($: EngineInterface) => {
+  await check($).catch(() => {})
+  await loadMine($).catch(() => {})
+  await rebuild($).catch(() => {})
+  const opened = await openPane($)
+  return opened.isPlaced ? 'Themes opened in the side pane.' : `Themes pane not shown: ${opened.reason}`
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     // (not /theme: Claude Code has its own)
     await $.command.register({ name: 'themes', description: 'Pick a theme for Claude Desktop' })
+    await $.command.register({ name: 'narsil-skin', description: 'Narsil Skin: themes (open the theme pane), help' })
     try {
       await loadMine($).catch(() => {})
       const dir = await slot($)
@@ -297,13 +313,10 @@ export const register: Register = on => {
     return next(e)
   })
 
-  on('command.run', { command: 'themes' }, async $ => {
-    await check($).catch(() => {})
-    await loadMine($).catch(() => {})
-    await rebuild($).catch(() => {})
-    const opened = await openPane($)
-    return { text: opened.isPlaced ? 'Themes opened in the side pane.' : `Themes pane not shown: ${opened.reason}` }
-  })
+  on('command.run', { command: 'themes' }, async $ => ({ text: await showThemes($) }))
+
+  on('command.run', { command: 'narsil-skin' }, async ($, e) =>
+    ({ text: e.args.trim() === 'themes' ? await showThemes($) : HELP }))
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const els = $.ui.resolve(e)

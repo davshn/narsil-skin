@@ -134,3 +134,22 @@ test('on macOS the pane installs into Application Support and sets REACT_PROFILE
   expect(runs).toContainEqual(['rm', '-f', agent])
   expect(runs).toContainEqual(['rm', '-rf', slot])
 })
+
+test('/narsil-skin themes opens the same pane as /themes, and anything else shows the help', async ($, on) => {
+  const opened: string[] = []
+  on('ui.open', ($, e) => { opened.push(e.id); return { value: { isPlaced: true } } })
+  on('env.get', ($, e) => ({ value: e.name === 'APPDATA' ? 'C:\AppData' : undefined }))
+  on('fs.read', () => { throw new Error('ENOENT') })
+  const viaGroup = await $.command.run({ command: 'narsil-skin', args: 'themes' })
+  expect(viaGroup.text).toMatch(/side pane/)
+  expect(opened).toEqual(['themes'])
+  const viaAlias = await $.command.run({ command: 'themes', args: '' })
+  expect(viaAlias.text).toBe(viaGroup.text)
+  expect(opened).toEqual(['themes', 'themes'])
+  for (const args of ['', 'help', 'nope']) {
+    const help = await $.command.run({ command: 'narsil-skin', args })
+    expect(help.text).toMatch(/\/narsil-skin themes/)
+    expect(help.text).toMatch(/\/narsil-skin:make-theme/)
+  }
+  expect(opened).toEqual(['themes', 'themes'])
+})
