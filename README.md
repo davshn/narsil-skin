@@ -28,6 +28,8 @@ Es un mod de Claude Code de **código abierto**, publicado bajo la licencia [MIT
 ### El panel de temas
 `/narsil-skin themes` abre el panel **Themes** al lado del chat. Arriba dice qué tema llevas puesto y su descripción, y debajo están los temas agrupados en **Live wallpapers** (fondos animados), **Color themes** (temas de color) y **Your themes** (tus temas), cada uno con su miniatura. Un clic en un tema lo aplica al momento; **Claude** devuelve los colores originales de la app. El panel se cierra con **Close** o con Escape.
 
+El botón **Auto day and night** cambia de tema solo según la hora de tu equipo: **Narsil Light** de 6:00 a 17:59 y **Narsil** de 18:00 a 5:59. Se apaga pulsándolo otra vez o eligiendo un tema a mano.
+
 La primera vez el panel solo muestra el botón **Install extension**: es el paso que instala lo que pinta los temas (consulta [Instalación](#instalación)).
 
 ### Fondos animados

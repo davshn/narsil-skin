@@ -192,6 +192,13 @@ const loadScene = async path => {
 };
 
 let theme, warned = false;
+// auto: theme.json holds a day and a night theme, and this page's clock picks one (day is 6:00 to 17:59)
+const ofTheHour = file => {
+  if (!file?.auto) return file;
+  const hour = new Date().getHours();
+  return hour >= 6 && hour < 18 ? file.day : file.night;
+};
+let file, shown;
 const tickTheme = async () => {
   let text;
   try {
@@ -201,15 +208,25 @@ const tickTheme = async () => {
     warned = true;
     return;
   }
-  if (text === theme) return;
-  theme = text;
+  const changed = text !== theme;
+  if (changed) {
+    theme = text;
+    try {
+      file = JSON.parse(text);
+    } catch (err) {
+      console.warn('narsil-skin: theme.json is not JSON', err);
+      return;
+    }
+  }
+  const t = ofTheHour(file);
+  if (!t || (!changed && t === shown)) return;
+  shown = t;
   try {
-    const t = JSON.parse(text);
     await loadScene(t.scene);
     apply(t);
     console.log('narsil-skin:', t.id ?? 'Claude\'s own');
   } catch (err) {
-    console.warn('narsil-skin: theme.json is not JSON', err);
+    console.warn('narsil-skin: the theme failed to apply', err);
   }
 };
 

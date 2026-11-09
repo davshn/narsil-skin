@@ -125,8 +125,15 @@ const loadMine = async ($: EngineInterface) => {
 const allThemes = () => [...THEMES, ...mine]
 
 let n = Date.now() // (so a reloaded module never repeats an event number)
+// The automatic option: `current` is AUTO, theme.json holds both themes and the page picks one by its own clock
+const AUTO = 'auto'
+const DAY = 'narsil-light'
+const NIGHT = 'narsil'
+export const isDay = (hour: number) => hour >= 6 && hour < 18
+const ofTheHour = () => THEMES.find(t => t.id === (isDay(new Date().getHours()) ? DAY : NIGHT))!
 const active = async ($: EngineInterface) => {
   const id = await read($, current)
+  if (id === AUTO) return ofTheHour()
   return id === 'claude' ? undefined : allThemes().find(t => t.id === id)
 }
 type State = 'thinking' | 'waiting' | 'idle'
@@ -331,24 +338,43 @@ const remove = async ($: EngineInterface) => {
     : `Could not remove every file. Delete them by hand in ${dir}`)
 }
 
-const pick = async ($: EngineInterface, t: Theme) => {
-  const dir = await slot($)
-  if (!dir) return
+const lookNow = async ($: EngineInterface): Promise<Look> =>
+  ({ motion: await read($, motion), speed: await read($, speed), cell: await read($, cell), veil: await read($, veil) })
+
+// the theme's file as the page reads it
+const fileFor = async ($: EngineInterface, dir: string, t: Theme) => {
   const css = async (name: string) => String(await $.fs.read(`${$.plugin.root}/themes/${name}.css`).catch(() => ''))
   const wall = t.wallpaper ? await css('_wallpaper') : ''
   // the person's own scene: copied in as a module beside theme.js, a new ?v= each time the file changes
   const own = t.wallpaper && Object.hasOwn(sceneAt, t.id) ? await mineDir($) : undefined
   if (own) await $.fs.write(join(dir, 'scenes', `${t.id}.js`), sceneModule(String(await $.fs.read(join(own, `${t.id}.js`)))))
-  await $.fs.write(join(dir, 'theme.json'), fileOf(t, `${await css('_base')}\n${wall}\n${t.css ?? (await css(t.id))}`,
-    { motion: await read($, motion), speed: await read($, speed), cell: await read($, cell), veil: await read($, veil) },
-    own ? `scenes/${t.id}.js?v=${sceneAt[t.id]}` : undefined))
+  return fileOf(t, `${await css('_base')}\n${wall}\n${t.css ?? (await css(t.id))}`, await lookNow($),
+    own ? `scenes/${t.id}.js?v=${sceneAt[t.id]}` : undefined)
+}
+
+const pick = async ($: EngineInterface, t: Theme) => {
+  const dir = await slot($)
+  if (!dir) return
+  await $.fs.write(join(dir, 'theme.json'), await fileFor($, dir, t))
   await update($, current, () => t.id)
   $.ui.status(statusOf(t, 'idle'))
   $.ui.toast(`Theme: ${t.name}`)
 }
 
+const pickAuto = async ($: EngineInterface) => {
+  const dir = await slot($)
+  if (!dir) return
+  const of = async (id: string) => JSON.parse(await fileFor($, dir, THEMES.find(t => t.id === id)!))
+  await $.fs.write(join(dir, 'theme.json'),
+    JSON.stringify({ id: AUTO, auto: true, ...(await lookNow($)), day: await of(DAY), night: await of(NIGHT) }))
+  await update($, current, () => AUTO)
+  $.ui.status(statusOf(ofTheHour(), 'idle'))
+  $.ui.toast('Theme: Narsil Light by day, Narsil by night')
+}
+
 const next = <T,>(list: T[]) => (v: T) => list[(list.indexOf(v) + 1) % list.length]!
 const repick = async ($: EngineInterface) => {
+  if ((await read($, current)) === AUTO) return pickAuto($)
   const now = await active($)
   if (now) await pick($, now)
 }
@@ -413,7 +439,7 @@ export const register: Register = on => {
     const size = await read($, cell)
     const shade = await read($, veil)
     const os = (await hostOf($))?.os ?? 'windows'
-    const worn = allThemes().find(t => t.id === now) ?? THEMES[0]!
+    const worn = now === AUTO ? ofTheHour() : allThemes().find(t => t.id === now) ?? THEMES[0]!
     const row = (title: string, themes: Theme[]) => (
       <Box key={`row-${title}`} flexDirection="column" gap="xs">
         <Text dimColor>{title}</Text>
@@ -467,6 +493,13 @@ export const register: Register = on => {
             <Button key="veil" label={shade ? `${Math.round(shade * 100)}%` : 'Off'} onPress={() => nextVeil($)} />
           </Box>
         )}
+        {stage === 'ready' ? (
+          <Box key="auto-row" flexDirection="row" gap={1} alignItems="center" flexWrap="wrap">
+            <Button key="auto" label={now === AUTO ? '✓ Auto day and night' : 'Auto day and night'} dimColor={now !== AUTO}
+              onPress={() => (now === AUTO ? pick($, ofTheHour()) : pickAuto($))} />
+            <Text dimColor>Narsil Light from 6:00 to 17:59, Narsil from 18:00 to 5:59</Text>
+          </Box>
+        ) : null}
         {stage === 'ready' ? row('Live wallpapers', THEMES.filter(t => t.wallpaper)) : null}
         {stage === 'ready' ? row('Color themes', THEMES.filter(t => !t.wallpaper)) : null}
         {stage === 'ready' && mine.length ? row('Your themes', mine) : null}
