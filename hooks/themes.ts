@@ -10,6 +10,13 @@ export const THEMES: Theme[] = [
       ['#0f1a2c', '#dce6fa', '#5aaeff'], '#0f1a2c',
       'rgba(15, 26, 44, .6)', 'rgba(90, 174, 255, .3)', 'Mar en calma, código en marcha 🌊',
       { idle: '🌙 Narsil', tool: '🌊 {tool}…', error: '⚔ {tool} failed', done: '✨ done' })),
+  // Narsil by day, for light mode: a sun in place of the moon and the stars
+  ((t: Theme) => ({ ...t, vars: { ...t.vars, 'cds-shadow-md': '0 6px 22px rgba(31, 131, 168, .14)',
+    'cds-shadow-lg': '0 12px 34px rgba(31, 131, 168, .18)' } }))(
+    live('narsil-light', 'Narsil Light', 'Narsil by day: sky blue water and a slow turning sun',
+      ['#c9e7f1', '#0f2f47', '#1f83a8'], 'linear-gradient(90deg, #86d1e8, #b7deed 24%, #c9e7f1 58%)',
+      'rgba(255, 255, 255, .62)', 'rgba(31, 131, 168, .3)', 'Cielo claro, código en marcha ☀️',
+      { idle: '☀️ Narsil', tool: '🌊 {tool}…', error: '⚔ {tool} failed', done: '✨ done' })),
 ]
 
 function live(id: string, name: string, tagline: string, [bg, text, accent]: [string, string, string], sky: string,

@@ -8,7 +8,7 @@ const mod = fileURLToPath(new URL('../../', import.meta.url))
 const out = fileURLToPath(new URL('.', import.meta.url))
 const js = build()
 const css = readFileSync(`${mod}/themes/_base.css`, 'utf8') + '\n' + readFileSync(`${mod}/themes/_wallpaper.css`, 'utf8')
-const AT: Record<string, number> = { narsil: 20 }
+const AT: Record<string, number> = { narsil: 20, 'narsil-light': 20 }
 if (!js.includes('time: 0, last: 0')) throw new Error('theme.js changed: no clock start')
 for (const t of THEMES.filter(t => t.wallpaper)) {
   const T = JSON.stringify({ id: t.id, bg: t.bg, text: t.text, accent: t.accent, vars: t.vars, wallpaper: t.wallpaper, motion: 'smooth', cell: 22, css })

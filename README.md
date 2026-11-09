@@ -51,6 +51,13 @@ La ola de abajo resume el estado de todas tus conversaciones a la vez:
 
 Si a la vez hay una conversación esperándote y un error en otra, la ola se pone amarilla.
 
+<p align="center">
+  <img src="docs/narsil-light.png" alt="Narsil Light: a sky blue background with a sun at the top right of the window">
+  <br><strong>Narsil Light</strong>
+</p>
+
+**Narsil Light** es la versión de día para el modo claro: un cielo celeste con un sol arriba a la derecha, cuyos rayos giran despacio, y todo el texto en negrita. La ola funciona igual, en tonos más suaves para que se lean las letras que quedan debajo, y al terminar el turno destella la luz del sol.
+
 Mientras Claude piensa, la escena va tres veces más rápido.
 
 ### Temas de color

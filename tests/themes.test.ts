@@ -22,7 +22,8 @@ test('a person\'s own theme is read as a simple theme, and a bad one is refused'
 test('every theme has a tile the desktop takes, and Claude writes no colors', async () => {
   for (const t of THEMES) expect(tile(t, true).length < 131072).toBe(true)
   expect(fileOf(THEMES[0]!)).toBe('{}')
-  expect(THEMES.map(t => t.id)).toEqual(['claude', 'narsil'])
+  expect(THEMES.map(t => t.id)).toEqual(['claude', 'narsil', 'narsil-light'])
+  expect(THEMES.find(t => t.id === 'narsil-light')).toMatchObject({ bg: '#c9e7f1', text: '#0f2f47', accent: '#1f83a8', wallpaper: 'narsil-light' })
   expect(THEMES.find(t => t.id === 'narsil')).toMatchObject({ bg: '#0f1a2c', text: '#dce6fa', accent: '#5aaeff', wallpaper: 'narsil' })
   expect(THEMES.find(t => t.id === 'narsil')?.vars?.['wall-sky']).toBe('#0f1a2c')
   const sea = JSON.parse(fileOf(THEMES[1]!, 'html{}'))
