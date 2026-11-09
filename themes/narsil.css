@@ -110,3 +110,6 @@ html[data-theme-state=waiting] body::after {
 
 /* the orange spark while Claude works, turned purple */
 [data-cds=Spark], [data-cds=WorkingMark] { filter: hue-rotate(262deg) saturate(1.3); }
+
+/* all the text in bold */
+body, body * { font-weight: 700 !important; }
