@@ -22,6 +22,10 @@ html[data-theme-wave=error]::before {
 }
 
 ::selection { background: #86d1e8; color: #0f2f47; }
+/* in the conversation, dark blue with a soft white instead of a bright one */
+.epitaxy-transcript-typography ::selection, .epitaxy-transcript-typography::selection {
+  background: #1f4e79 !important; color: #e4e8ee !important;
+}
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(90, 174, 255, .3); border-radius: 9px; }
