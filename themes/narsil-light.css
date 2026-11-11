@@ -97,5 +97,23 @@ html[data-theme-state=waiting] body::after {
 /* the orange spark while Claude works, turned purple */
 [data-cds=Spark], [data-cds=WorkingMark] { filter: hue-rotate(262deg) saturate(1.3); }
 
+/* the shimmering text of Claude's actions while it works: the desktop app draws the shine on a copy laid over the
+   text, with a transparent fill, and the theme's text halo carried by that copy covers the letters, so they read as
+   hollow; the copy is hidden, the shine is dropped, and the letters stay solid and pulse from a light tone to a darker one */
+[data-cds-shimmer-clone] { display: none !important; }
+:is([class*="shimmer-text"], [class*="shimmertext"], :has(> [data-cds-shimmer-clone])) {
+  background-image: none !important; -webkit-mask-image: none !important; mask-image: none !important;
+  -webkit-text-stroke: 0 !important;
+  -webkit-text-fill-color: var(--cds-text-primary) !important; color: var(--cds-text-primary) !important;
+  animation: none !important;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduce-motion=true]) :is([class*="shimmer-text"], [class*="shimmertext"], :has(> [data-cds-shimmer-clone])) { animation: narsil-ink 1.4s ease-in-out infinite alternate !important; }
+}
+@keyframes narsil-ink {
+  from { -webkit-text-fill-color: var(--cds-text-primary); color: var(--cds-text-primary); }
+  to { -webkit-text-fill-color: var(--cds-text-muted); color: var(--cds-text-muted); }
+}
+
 /* all the text in bold */
 body, body * { font-weight: 700 !important; }
