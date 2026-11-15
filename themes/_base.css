@@ -17,3 +17,20 @@ diffs-container {
   --df-sidebar-muted: var(--cds-text-muted) !important;
   --cds-shortcut-cap-ink: var(--cds-text-muted) !important;
 }
+
+/* the app's fizzy-lake palette ([data-cds-fizzy-lake~=color]) paints the sidebar, its rows and icons with fixed
+   greys of its own, and some of its rules reassign --cds-text-muted and --cds-text-secondary on the elements they
+   reach; the theme's tones are taken once at the root, where they are the theme's, so they hold on every element */
+:root {
+  --theme-ink-secondary: var(--cds-text-secondary);
+  --theme-ink-muted: var(--cds-text-muted);
+  --theme-card-hover: var(--cds-surface-2);
+}
+* {
+  --cds-fizzy-lake-color-sidebar: var(--desktop-theme-backdrop) !important;
+  --cds-fizzy-lake-color-secondary: var(--theme-ink-muted) !important;
+  --cds-fizzy-lake-color-plain-secondary: var(--theme-ink-secondary) !important;
+  --cds-fizzy-lake-color-plain-muted: var(--theme-ink-muted) !important;
+  --cds-fizzy-lake-color-placeholder: var(--theme-ink-muted) !important;
+  --cds-fizzy-lake-color-card-hover: var(--theme-card-hover) !important;
+}
