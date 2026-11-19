@@ -1,142 +1,142 @@
 # Narsil Skin
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-claro.svg" width="150" alt="Narsil estrenando tema (modo claro)">
-  <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-oscuro.svg" width="150" alt="Narsil estrenando tema (modo oscuro)">
+  <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-claro.svg" width="150" alt="Narsil showing off a new theme (light mode)">
+  <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-oscuro.svg" width="150" alt="Narsil showing off a new theme (dark mode)">
 </p>
 
-Narsil Skin es el tercer mod de la familia de [Narsil](https://github.com/davshn/narsil-pet), junto a [Narsil Check](https://github.com/davshn/narsil-check): le cambia la piel a la app de escritorio de Claude. Aplica temas de color en vivo (colores, fuentes, esquinas y sombras) y fondos animados dibujados con caracteres que se mueven detrás del chat. Los temas se eligen desde un panel lateral con `/narsil-skin themes`, así que el espacio encima del prompt queda libre para Narsil.
+Narsil Skin is the third mod in the [Narsil](https://github.com/davshn/narsil-pet) family, alongside [Narsil Check](https://github.com/davshn/narsil-check): it reskins the Claude desktop app. It applies live color themes (colors, fonts, corners, and shadows) and animated wallpapers drawn with characters that move behind the chat. Themes are picked from a side pane with `/narsil-skin themes`, so the space above the prompt stays free for Narsil.
 
-Es un *fork* de [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), de [0toshigami](https://github.com/0toshigami): todo el trabajo original, el diseño y los temas son suyos. Consulta [Créditos](#créditos).
+It is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), by [0toshigami](https://github.com/0toshigami): all the original work, the design, and the themes are theirs. See [Credits](#credits).
 
-Es un mod de Claude Code de **código abierto**, publicado bajo la licencia [MIT](#licencia).
+It is an **open source** Claude Code mod, released under the [MIT](#license) license.
 
-## Índice
+## Contents
 
-- [Funcionalidades](#funcionalidades)
-- [Instalación](#instalación)
-- [Comandos](#comandos)
-- [Sistemas compatibles](#sistemas-compatibles)
-- [Desinstalación](#desinstalación)
-- [Seguridad](#seguridad)
-- [Desarrollo](#desarrollo)
-- [Créditos](#créditos)
-- [Licencia](#licencia)
+- [Features](#features)
+- [Installation](#installation)
+- [Commands](#commands)
+- [Supported systems](#supported-systems)
+- [Uninstalling](#uninstalling)
+- [Security](#security)
+- [Development](#development)
+- [Credits](#credits)
+- [License](#license)
 
-## Funcionalidades
+## Features
 
-### El panel de temas
-`/narsil-skin themes` abre el panel **Themes** al lado del chat. Arriba dice qué tema llevas puesto y su descripción, y debajo están los temas agrupados en **Live wallpapers** (fondos animados), **Color themes** (temas de color) y **Your themes** (tus temas), cada uno con su miniatura. Un clic en un tema lo aplica al momento; **Claude** devuelve los colores originales de la app. El panel se cierra con **Close** o con Escape.
+### The themes pane
+`/narsil-skin themes` opens the **Themes** pane next to the chat. At the top it says which theme you have on and its description, and below are the themes grouped into **Live wallpapers**, **Color themes**, and **Your themes**, each with its thumbnail. A click on a theme applies it right away; **Claude** brings back the app's original colors. The pane closes with **Close** or with Escape.
 
-El botón **Auto day and night** cambia de tema solo según la hora de tu equipo: **Narsil Light** de 6:00 a 17:59 y **Narsil** de 18:00 a 5:59. Se apaga pulsándolo otra vez o eligiendo un tema a mano.
+The **Auto day and night** button switches themes on its own based on your computer's clock: **Narsil Light** from 6:00 to 17:59 and **Narsil** from 18:00 to 5:59. Turn it off by clicking it again or by picking a theme by hand.
 
-La primera vez el panel solo muestra el botón **Install extension**: es el paso que instala lo que pinta los temas (consulta [Instalación](#instalación)).
+The first time, the pane only shows the **Install extension** button: that is the step that installs what paints the themes (see [Installation](#installation)).
 
-### Fondos animados
-Una escena dibujada con caracteres se mueve detrás del chat. Desde el panel puedes cambiar su movimiento (suave o celda a celda), su velocidad, el tamaño de las celdas y la opacidad del fondo que hay detrás del texto para que se lea bien.
+### Animated wallpapers
+A scene drawn with characters moves behind the chat. From the pane you can change its motion (smooth or cell by cell), its speed, the cell size, and the opacity of the background behind the text so it stays readable.
 
 <p align="center">
   <img src="docs/narsil.png" alt="Narsil: a night sea background with a crescent moon at the top right of the window">
   <br><strong>Narsil</strong>
 </p>
 
-**Narsil** es el tema de la casa: un mar nocturno con una luna creciente arriba a la derecha, cuya luz respira despacio. La luna es lo único de la escena que se anima. Las estrellas destellan al terminar el turno, cruzan estrellas fugaces mientras Claude piensa y late un borde azul cuando te espera.
+**Narsil** is the house theme: a night sea with a crescent moon at the top right, whose light breathes slowly. The moon is the only part of the scene that animates. The stars twinkle when a turn ends, shooting stars cross while Claude thinks, and a blue border pulses when it is waiting for you.
 
-La ola de abajo resume el estado de todas tus conversaciones a la vez:
+The wave at the bottom sums up the state of all your conversations at once:
 
-| Ola | Cuándo |
+| Wave | When |
 |:-|:-|
-| **Amarilla** | Alguna conversación necesita tu respuesta. |
-| **Roja** | Hubo un error. Se apaga cuando una herramienta vuelve a funcionar o le escribes a esa conversación. |
-| **Azul** | No hay nada pendiente. |
-| **Marea alta** | Alguna conversación está trabajando. |
+| **Yellow** | Some conversation needs your answer. |
+| **Red** | There was an error. It goes out when a tool works again or you write to that conversation. |
+| **Blue** | Nothing is pending. |
+| **High tide** | Some conversation is working. |
 
-Si a la vez hay una conversación esperándote y un error en otra, la ola se pone amarilla.
+If one conversation is waiting for you and another has an error at the same time, the wave turns yellow.
 
 <p align="center">
   <img src="docs/narsil-light.png" alt="Narsil Light: a sky blue background with a sun at the top right of the window">
   <br><strong>Narsil Light</strong>
 </p>
 
-**Narsil Light** es la versión de día para el modo claro: un cielo celeste con un sol arriba a la derecha, cuyos rayos giran despacio, y todo el texto en negrita. La ola funciona igual, en tonos más suaves para que se lean las letras que quedan debajo, y al terminar el turno destella la luz del sol.
+**Narsil Light** is the daytime version for light mode: a sky-blue sky with a sun at the top right, whose rays turn slowly, and all text in bold. The wave works the same way, in softer tones so the text over it stays readable, and the sunlight flashes when a turn ends.
 
-Mientras Claude piensa, la escena va tres veces más rápido.
+While Claude thinks, the scene runs three times faster.
 
-### Temas de color
-Un tema de color cambia los colores, las fuentes, la forma de las esquinas y las sombras, y puede reaccionar a lo que hace Claude. El mod solo incluye **Claude**, los colores originales de la app; puedes [crear los tuyos](#tus-propios-temas).
+### Color themes
+A color theme changes the colors, the fonts, the shape of the corners, and the shadows, and can react to what Claude is doing. The mod only includes **Claude**, the app's original colors; you can [make your own](#your-own-themes).
 
-Si tienes activado "reducir movimiento", las animaciones se apagan y solo quedan los cambios de color.
+If you have "reduce motion" on, the animations turn off and only the color changes remain.
 
-### Tus propios temas
-Pídele a Claude "hazme un tema" con una idea, una imagen o las dos. La skill `make-theme` te pregunta qué tipo quieres, te enseña un borrador como Artifact para que lo apruebes y después lo construye.
+### Your own themes
+Ask Claude to "make me a theme" with an idea, an image, or both. The `make-theme` skill asks you which kind you want, shows you a draft as an Artifact for you to approve, and then builds it.
 
-También puedes crearlos a mano en `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`):
+You can also create them by hand in `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`):
 
-- **Tema de color**: `<id>.json`, con un `<id>.css` opcional.
-- **Fondo animado**: `<id>.json` con `"wallpaper": "<id>"` y la escena en `<id>.js`. Aparece al elegirlo en `/narsil-skin themes`, sin reiniciar.
+- **Color theme**: `<id>.json`, with an optional `<id>.css`.
+- **Animated wallpaper**: `<id>.json` with `"wallpaper": "<id>"` and the scene in `<id>.js`. It shows up when you pick it in `/narsil-skin themes`, without restarting.
 
-Salen en **Your themes** y una actualización del mod no los borra.
+They appear under **Your themes**, and a mod update does not delete them.
 
-## Instalación
+## Installation
 
-Necesitas la app de escritorio de Claude, en la pestaña **Code**. Dentro de Claude Code, ejecuta:
+You need the Claude desktop app, in the **Code** tab. Inside Claude Code, run:
 
 ```
 /plugin marketplace add davshn/narsil-skin
 /plugin install narsil-skin@narsil-skin
 ```
 
-En la app de escritorio, donde `/plugin` no funciona: abre **Settings → Plugins**, pulsa **Add → Add marketplace**, escribe `davshn/narsil-skin` e instala **narsil-skin**.
+In the desktop app, where `/plugin` does not work: open **Settings → Plugins**, click **Add → Add marketplace**, type `davshn/narsil-skin`, and install **narsil-skin**.
 
-Después:
+Then:
 
-1. Si `/narsil-skin` no sale en la lista de comandos, ejecuta `/reload-plugins` y luego `/reload-skills`.
-2. Ejecuta `/narsil-skin themes` en una conversación. En la página de inicio de **+ New** solo abre una conversación nueva: vuelve a ejecutarlo dentro de ella.
-3. Pulsa **Install extension**. Copia la extensión que pinta los temas en la carpeta `extensions` de la app y define `REACT_PROFILE=1`, que hace que la app la cargue:
-   - **Windows**: la carpeta es `%LOCALAPPDATA%\Claude-Data\claude_<id>\extensions` en las instalaciones recientes (la de la Microsoft Store, entre ellas) y `%APPDATA%\Claude\extensions` en las demás. La variable se define para tu usuario.
-   - **macOS**: la carpeta es `~/Library/Application Support/Claude/extensions`. La variable se define con `launchctl setenv` y un LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`) la vuelve a definir en cada inicio de sesión.
-4. Cierra la app del todo (en Windows, también desde la bandeja del sistema; en macOS, con Cmd+Q) y ábrela otra vez.
-5. Ejecuta `/narsil-skin themes` y elige un tema.
+1. If `/narsil-skin` does not show up in the command list, run `/reload-plugins` and then `/reload-skills`.
+2. Run `/narsil-skin themes` in a conversation. On the **+ New** home page it only opens a new conversation: run it again inside that one.
+3. Click **Install extension**. It copies the extension that paints the themes into the app's `extensions` folder and sets `REACT_PROFILE=1`, which makes the app load it:
+   - **Windows**: the folder is `%LOCALAPPDATA%\Claude-Data\claude_<id>\extensions` in recent installs (including the Microsoft Store one) and `%APPDATA%\Claude\extensions` in the others. The variable is set for your user.
+   - **macOS**: the folder is `~/Library/Application Support/Claude/extensions`. The variable is set with `launchctl setenv`, and a LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`) sets it again at each login.
+4. Quit the app completely (on Windows, also from the system tray; on macOS, with Cmd+Q) and open it again.
+5. Run `/narsil-skin themes` and pick a theme.
 
-Para actualizarlo a la última versión:
+To update to the latest version:
 
 ```
 /plugin marketplace update narsil-skin
 /plugin update narsil-skin@narsil-skin
 ```
 
-## Comandos
+## Commands
 
-| Comando | Qué hace |
+| Command | What it does |
 | --- | --- |
-| `/narsil-skin themes` | Abre el panel de temas. Es la forma de volver a abrirlo si lo cierras. |
-| `/narsil-skin` | Muestra la ayuda con los comandos. También responde así a un argumento que no conoce. |
-| `/narsil-skin:make-theme` | Crea un tema nuevo, de color o un fondo animado, a partir de una idea o una imagen. También puedes pedírselo a Claude con tus palabras. |
+| `/narsil-skin themes` | Opens the themes pane. It is the way to open it again if you close it. |
+| `/narsil-skin` | Shows the help with the commands. It also answers this way to an argument it does not know. |
+| `/narsil-skin:make-theme` | Creates a new theme, a color one or an animated wallpaper, from an idea or an image. You can also ask Claude for it in your own words. |
 
-## Sistemas compatibles
+## Supported systems
 
-Los temas los pinta una extensión dentro de la app de escritorio, así que solo se ven allí:
+The themes are painted by an extension inside the desktop app, so they are only visible there:
 
-| | App de escritorio | Terminal, VS Code y app móvil |
+| | Desktop app | Terminal, VS Code, and mobile app |
 | --- | --- | --- |
-| Panel de temas | Sí | El panel se dibuja, pero no hay nada que pintar |
-| Temas de color y fondos animados | Sí, en Windows y macOS | No |
-| Linux | Todavía no | No |
+| Themes pane | Yes | The pane is drawn, but there is nothing to paint |
+| Color themes and animated wallpapers | Yes, on Windows and macOS | No |
+| Linux | Not yet | No |
 
-No es una función oficial de la app: se apoya en los mods y las extensiones que la app ya tiene, así que una actualización de la app puede romperlo.
+It is not an official app feature: it relies on the mods and extensions the app already has, so an app update may break it.
 
-## Desinstalación
+## Uninstalling
 
-Desinstalar el plugin solo quita sus comandos. La extensión de la carpeta `extensions` se queda, así que quítala primero:
+Uninstalling the plugin only removes its commands. The extension in the `extensions` folder stays, so remove it first:
 
-1. Ejecuta `/narsil-skin themes` y pulsa **Remove extension**. Quita los archivos y las entradas del mod de `fmkadmapgofadopljbjfkapdkoienihi`, en la carpeta `extensions` de la app. Si ningún otro mod usa esa carpeta, también la borra junto con la variable `REACT_PROFILE` (y en macOS, el LaunchAgent). Si otro mod la usa, deja las dos.
-2. Reinicia la app.
-3. Desinstala el plugin: en **Settings → Plugins** o con `claude plugin uninstall narsil-skin`.
-4. Opcional: quita también el marketplace, con `claude plugin marketplace remove narsil-skin` o desde **Settings → Plugins → Add → Manage marketplaces**.
+1. Run `/narsil-skin themes` and click **Remove extension**. It removes the mod's files and entries from `fmkadmapgofadopljbjfkapdkoienihi`, in the app's `extensions` folder. If no other mod uses that folder, it also deletes it along with the `REACT_PROFILE` variable (and on macOS, the LaunchAgent). If another mod uses it, it leaves both.
+2. Restart the app.
+3. Uninstall the plugin: in **Settings → Plugins** or with `claude plugin uninstall narsil-skin`.
+4. Optional: also remove the marketplace, with `claude plugin marketplace remove narsil-skin` or from **Settings → Plugins → Add → Manage marketplaces**.
 
-Tus temas de `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`) se quedan. Borra esa carpeta si no los quieres.
+Your themes in `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`) stay. Delete that folder if you do not want them.
 
-Si desinstalaste el plugin primero, quita la extensión a mano. La carpeta puede tener otros mods, así que esto solo la borra, junto con la variable, cuando contiene únicamente este. En PowerShell:
+If you uninstalled the plugin first, remove the extension by hand. The folder may hold other mods, so this only deletes it, along with the variable, when it contains only this one. In PowerShell:
 
 ```powershell
 $data = Get-ChildItem "$env:LOCALAPPDATA\Claude-Data" -Directory -Filter 'claude*' -ErrorAction SilentlyContinue |
@@ -147,7 +147,7 @@ if (((Get-Content "$d\manifest.json" -Raw | ConvertFrom-Json).content_scripts.js
 } else { "Another mod shares $d. Delete only theme.js, theme.json and event.json, and their manifest entries." }
 ```
 
-En macOS, en la Terminal:
+On macOS, in Terminal:
 
 ```bash
 d="$HOME/Library/Application Support/Claude/extensions/fmkadmapgofadopljbjfkapdkoienihi"
@@ -158,45 +158,45 @@ if [ "$(js content_scripts)/$(js content_scripts.0.js)/$(js content_scripts.0.js
 else echo "Another mod shares $d. Delete only theme.js, theme.json and event.json, and their manifest entries."; fi
 ```
 
-## Seguridad
+## Security
 
-La hoja de estilos de un tema se aplica a tu página de Claude con la sesión iniciada, así que la extensión rechaza cualquier hoja que cargue algo de fuera: nada de `@import` ni de `url()`, salvo `data:`. El `.json` y el `.css` de un tema son solo datos.
+A theme's stylesheet is applied to your signed-in Claude page, so the extension rejects any stylesheet that loads something from outside: no `@import` and no `url()`, except `data:`. A theme's `.json` and `.css` are data only.
 
-La escena de un fondo animado (`<id>.js`) es código y se ejecuta en tu página de Claude con la sesión iniciada. Guarda solo escenas que hayas hecho tú o en las que confíes, como con cualquier otro código.
+An animated wallpaper's scene (`<id>.js`) is code and runs on your signed-in Claude page. Only keep scenes you made yourself or that you trust, as with any other code.
 
-## Desarrollo
+## Development
 
-Narsil Skin es de código abierto y las contribuciones son bienvenidas: abre un *issue* o un *pull request* en [GitHub](https://github.com/davshn/narsil-skin). Las mejoras que sirvan a todos se agradecen también en el [proyecto original](https://github.com/0toshigami/claude-desktop-themes).
+Narsil Skin is open source and contributions are welcome: open an issue or a pull request on [GitHub](https://github.com/davshn/narsil-skin). Improvements that help everyone are also welcome in the [original project](https://github.com/0toshigami/claude-desktop-themes).
 
-Para trabajar sobre una copia local, añade su carpeta como marketplace; los cambios llegan con `/reload-plugins`, sin reinstalar:
+To work on a local copy, add its folder as a marketplace; changes arrive with `/reload-plugins`, without reinstalling:
 
 ```
-claude plugin marketplace add <ruta-a-tu-copia>
+claude plugin marketplace add <path-to-your-copy>
 claude plugin validate .
 claude plugin test .
 ```
 
-- `hooks/register.tsx`: los hooks del mod (el panel de temas, `/narsil-skin themes`, instalar y quitar la extensión, y las reacciones a lo que hace Claude).
-- `hooks/themes.ts`: la lista de temas, la lectura de tus temas y las miniaturas del panel.
-- `hooks/thumbs.ts`: las miniaturas de los fondos animados.
-- `extension/`: la extensión que pinta los temas dentro de la app (`core.js`, `engine.js` y las escenas de `extension/src/scenes/`).
-- `themes/`: las hojas de estilos de los temas de color, con la base común en `_base.css` y `_wallpaper.css`.
-- `skills/make-theme/`: la skill que crea temas nuevos.
-- `tools/`: el montaje de la extensión y la captura de las miniaturas.
-- `tests/`: los tests.
+- `hooks/register.tsx`: the mod's hooks (the themes pane, `/narsil-skin themes`, installing and removing the extension, and the reactions to what Claude is doing).
+- `hooks/themes.ts`: the list of themes, reading your themes, and the pane's thumbnails.
+- `hooks/thumbs.ts`: the animated wallpapers' thumbnails.
+- `extension/`: the extension that paints the themes inside the app (`core.js`, `engine.js`, and the scenes in `extension/src/scenes/`).
+- `themes/`: the color themes' stylesheets, with the shared base in `_base.css` and `_wallpaper.css`.
+- `skills/make-theme/`: the skill that creates new themes.
+- `tools/`: the extension build and the thumbnail capture.
+- `tests/`: the tests.
 
-## Créditos
+## Credits
 
-Narsil Skin es un *fork* de [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), creado por [0toshigami](https://github.com/0toshigami). Los temas, los fondos animados, la extensión y la skill `make-theme` son obra suya. Este fork lo mantiene [davshn](https://github.com/davshn), que cambió el selector de temas a un panel lateral para dejar libre el espacio encima del prompt.
+Narsil Skin is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), created by [0toshigami](https://github.com/0toshigami). The themes, the animated wallpapers, the extension, and the `make-theme` skill are their work. This fork is maintained by [davshn](https://github.com/davshn), who moved the theme picker to a side pane to keep the space above the prompt free.
 
-Gracias también a [@handsher_NGU](https://x.com/handsher_NGU/status/2115618341675319417/video/1), cuya publicación dio la idea del mod original.
+Thanks also to [@handsher_NGU](https://x.com/handsher_NGU/status/2115618341675319417/video/1), whose post gave the idea for the original mod.
 
-Es un mod de la comunidad: no lo ha hecho ni lo respalda Anthropic. Claude, Claude Desktop, Claude Code y Clawd son de Anthropic.
+It is a community mod: it is not made or endorsed by Anthropic. Claude, Claude Desktop, Claude Code, and Clawd belong to Anthropic.
 
-## Licencia
+## License
 
-Narsil Skin se publica bajo la [licencia MIT](LICENSE), la misma del proyecto original, cuyo aviso de copyright se conserva en [LICENSE](LICENSE).
+Narsil Skin is released under the [MIT license](LICENSE), the same as the original project, whose copyright notice is kept in [LICENSE](LICENSE).
 
-En resumen: puedes usarlo, copiarlo, modificarlo y distribuirlo libremente, también en proyectos cerrados, siempre que mantengas el aviso de copyright y el texto de la licencia. Se distribuye sin ninguna garantía.
+In short: you can use, copy, modify, and distribute it freely, including in closed-source projects, as long as you keep the copyright notice and the license text. It comes with no warranty.
 
 Copyright © 2026 0toshigami
