@@ -1,45 +1,142 @@
 import { expect, test } from 'claude-code/testing'
 
-import { fileOf, withoutOurs } from '../hooks/register'
-import { THEMES, parseUserTheme, tile } from '../hooks/themes'
-import { sceneModule } from '../tools/assemble.mjs'
+import { colorsOf } from '../hooks/look'
+import { lookOf, withoutOurs } from '../hooks/register'
+import { CALM, SCENES } from '../hooks/scenes'
+import { SCENE_MAX, THEMES, parseUserTheme, tile } from '../hooks/themes'
+import { HOME, MINE, PANE, begin, run, scene, win, world } from './world'
 
-test('a person\'s own theme is read as a simple theme, and a bad one is refused', async () => {
-  const good = parseUserTheme(JSON.stringify({ id: 'my-dusk', name: 'My Dusk', tagline: 't', bg: '#112233', text: '#eeeeee',
-    accent: '#ff8800', vars: { 'cds-radius': '6px', 'Bad Key': 'x' }, wallpaper: 'moonlit' }), 'html{}')
-  expect(good?.css).toBe('html{}')
-  expect(good?.vars).toEqual({ 'cds-radius': '6px' })
-  expect(good?.wallpaper).toBeUndefined()
-  const own = { id: 'snowy', name: 'Snowy', bg: '#000000', text: '#ffffff', accent: '#ff0000', wallpaper: 'snowy' }
-  expect(parseUserTheme(JSON.stringify(own), undefined, true)?.wallpaper).toBe('snowy')
-  expect(parseUserTheme(JSON.stringify(own))?.wallpaper).toBeUndefined()
-  expect(parseUserTheme(JSON.stringify({ ...own, wallpaper: 'moonlit' }), undefined, true)?.wallpaper).toBeUndefined()
+const OWN = { id: 'my-dusk', name: 'My Dusk', tagline: 't', bg: '#112233', text: '#eeeeee', accent: '#ff8800' }
+const SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="#112233"/></svg>'
+
+test('a person\'s own theme is read from its colors, its scene from its svg, and a bad one is refused', () => {
+  const plain = parseUserTheme(JSON.stringify(OWN))
+  expect(plain?.palette).toMatchObject({ mode: 'dark', roles: { accent: '#ff8800' } })
+  expect([plain?.palette?.surfaces[0], plain?.palette?.text[0]]).toEqual(['#112233', '#eeeeee'])
+  expect(plain?.wallpaper).toBeUndefined()
+  const light = parseUserTheme(JSON.stringify({ ...OWN, bg: '#F4EFE6', text: '#2a241d' }))
+  expect(light?.palette?.mode).toBe('light')
+  expect(light?.palette?.surfaces[0]).toBe('#f4efe6')
+  const live = parseUserTheme(JSON.stringify(OWN), SVG)
+  expect(live).toMatchObject({ wallpaper: 'my-dusk', scene: SVG })
+  expect(parseUserTheme(JSON.stringify(OWN), 'not svg')?.wallpaper).toBeUndefined()
+  expect(parseUserTheme(JSON.stringify(OWN), `<svg>${'x'.repeat(SCENE_MAX)}</svg>`)?.wallpaper).toBeUndefined()
+  for (const bad of ['<image href="x.png"/>', '<use href="other.svg#a"/>', '<style>@import "x.css";</style>',
+    '<rect fill="url(data:x)"/>', '<foreignObject/>'])
+    expect(parseUserTheme(JSON.stringify(OWN), SVG.replace('</svg>', `${bad}</svg>`))?.wallpaper).toBeUndefined()
+  expect(parseUserTheme(JSON.stringify(OWN), SVG.replace('</svg>', '<rect fill="url(#g)"/></svg>'))?.wallpaper).toBe('my-dusk')
   expect(parseUserTheme('{"id":"x y","name":"n","bg":"#000000","text":"#ffffff","accent":"#ff0000"}')).toBeUndefined()
   expect(parseUserTheme('{"id":"ok-id","name":"n","bg":"red","text":"#ffffff","accent":"#ff0000"}')).toBeUndefined()
   expect(parseUserTheme('not json')).toBeUndefined()
 })
 
-test('every theme has a tile the desktop takes, and Claude writes no colors', async () => {
-  for (const t of THEMES) expect(tile(t, true).length < 131072).toBe(true)
-  expect(fileOf(THEMES[0]!)).toBe('{}')
+test('every theme paints on Desktop, has a tile the desktop takes, and Claude has no colors', () => {
   expect(THEMES.map(t => t.id)).toEqual(['claude', 'narsil', 'narsil-light'])
-  expect(THEMES.find(t => t.id === 'narsil-light')).toMatchObject({ bg: '#c9e7f1', text: '#0f2f47', accent: '#1f83a8', wallpaper: 'narsil-light' })
-  expect(THEMES.find(t => t.id === 'narsil')).toMatchObject({ bg: '#0f1a2c', text: '#dce6fa', accent: '#5aaeff', wallpaper: 'narsil' })
-  expect(THEMES.find(t => t.id === 'narsil')?.vars?.['wall-sky']).toBe('#0f1a2c')
-  const sea = JSON.parse(fileOf(THEMES[1]!, 'html{}'))
-  expect(sea.accent).toBe('#5aaeff')
-  expect(sea.css).toBe('html{}')
-  expect(sea.vars['cds-radius']).toBe('8px')
-  const look = JSON.parse(fileOf(THEMES[1]!, '', { motion: 'grid', speed: 2, cell: 14, veil: .6 }))
-  expect(look.motion).toBe('grid')
-  expect(look.speed).toBe(2)
-  expect(look.cell).toBe(14)
-  expect(look.veil).toBe(.6)
-  expect(JSON.parse(fileOf(THEMES[1]!, '', undefined, 'scenes/snowy.js?v=1')).scene).toBe('scenes/snowy.js?v=1')
-  expect(sceneModule("SCENES['snowy'] = {}")).toMatch(/^const \{ [^}]*\bsketch\b[^}]*\} = globalThis\.themesForClaude;\nSCENES/)
+  expect(THEMES[0]!.palette).toBeUndefined()
+  for (const t of THEMES) expect(tile(t, true).length < SCENE_MAX).toBe(true)
+  const own = parseUserTheme(JSON.stringify(OWN))!
+  for (const t of [...THEMES.filter(t => t.palette), own]) {
+    const { problems } = colorsOf(t.name, t.palette!)
+    expect(problems.filter(l => l.startsWith("Desktop won't paint"))).toEqual([])
+  }
+  const sea = THEMES.find(t => t.id === 'narsil')?.palette, day = THEMES.find(t => t.id === 'narsil-light')?.palette
+  expect([sea?.mode, sea?.surfaces[0], sea?.roles.accent]).toEqual(['dark', '#0f1a2c', '#5aaeff'])
+  expect([day?.mode, day?.surfaces[0], day?.roles.accent]).toEqual(['light', '#c9e7f1', '#1f83a8'])
+  expect(lookOf(THEMES[1]!, .4).backdrop).toEqual({ scene: 'narsil', glass: { blur: 12, tint: '#0f1a2c', opacity: .4 } })
+  expect(lookOf(own, .4).backdrop).toBeUndefined()
 })
 
-test('removing takes out only our entries from a shared slot, and the whole slot when it was ours', async () => {
+// well-known palettes, faint or light-paged among them: each must paint, as a person writes it in <id>.json
+const KNOWN: [string, string, string, string][] = [
+  ['solarized-dark', '#002b36', '#839496', '#268bd2'], ['nord', '#2e3440', '#d8dee9', '#88c0d0'],
+  ['tokyo-night', '#1a1b26', '#a9b1d6', '#7aa2f7'], ['gruvbox-dark', '#3c3836', '#ebdbb2', '#fabd2f'],
+  ['solarized-light', '#fdf6e3', '#657b83', '#268bd2'], ['latte', '#eff1f5', '#4c4f69', '#1e66f5'],
+  ['tan-paper', '#d2b48c', '#2b1d0e', '#8b4513'], ['sage', '#a3c1ad', '#1b2e22', '#2f6b4f'],
+]
+
+test('a person\'s palette paints on Desktop whether its page is light or dark, faint or strong', () => {
+  for (const [id, bg, text, accent] of KNOWN) {
+    const t = parseUserTheme(JSON.stringify({ id, name: id, bg, text, accent }))!
+    expect(`${id}: ${t.palette!.mode}`).toBe(`${id}: ${parseInt(text.slice(1, 3), 16) > parseInt(bg.slice(1, 3), 16) ? 'dark' : 'light'}`)
+    expect(`${id}: ${colorsOf(id, t.palette!).problems.find(l => l.startsWith("Desktop won't paint")) ?? 'paints'}`).toBe(`${id}: paints`)
+  }
+})
+
+test('a light page with dark text keeps the beat and paints when picked', async ($, on) => {
+  const tan = { id: 'tan-paper', name: 'Tan Paper', bg: '#d2b48c', text: '#2b1d0e', accent: '#8b4513' }
+  let beats = 0
+  const { sets, store } = world($, on, {
+    store: { current: 'tan-paper' },
+    files: { [win(MINE, 'tan-paper.json')]: JSON.stringify(tan) },
+    hooks: { 'clock.every': () => { beats++; return { value: undefined } } },
+  })
+  await begin($)
+  expect(beats).toBe(1)
+  expect(sets.length).toBe(1)
+  expect(store.current).toBe('tan-paper')
+})
+
+test('a person\'s theme edited and picked again is painted with its new colors', async ($, on) => {
+  const { sets, files } = world($, on, { files: { [win(MINE, 'my-dusk.json')]: JSON.stringify(OWN) } })
+  await run($, 'themes')
+  let ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'use-my-dusk' })
+  await ui.unmount()
+  const before = JSON.stringify(sets[sets.length - 1].colors)
+  files[win(MINE, 'my-dusk.json')] = JSON.stringify({ ...OWN, bg: '#331122' })
+  await run($, 'themes')
+  ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'use-my-dusk' })
+  await ui.unmount()
+  expect(JSON.stringify(sets[sets.length - 1].colors)).not.toBe(before)
+})
+
+test('every scene, in every mood, stays under the Svg limit and holds nothing the Backdrop refuses', () => {
+  const moods = [CALM, { ...CALM, state: 'thinking', tide: true }, { ...CALM, state: 'waiting', wave: 'waiting' },
+    { ...CALM, wave: 'error', flare: true }, { ...CALM, speed: 16, now: 123_456_789 }] as const
+  for (const [name, draw] of Object.entries(SCENES))
+    for (const m of moods) {
+      const svg = draw(m)
+      expect(svg.length < SCENE_MAX).toBe(true)
+      expect(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"')).toBe(true)
+      for (const bad of ['data:', 'base64', '<image', 'href', 'foreignObject', '@import', '@font-face', 'CDATA', '<!DOCTYPE', '<?'])
+        expect(`${name}: ${svg.includes(bad) ? bad : ''}`).toBe(`${name}: `)
+      expect(svg.includes(String.fromCharCode(92))).toBe(false)
+      expect(svg.match(/url\((?!#)/g)).toBeNull()
+      expect(svg.match(/&(?!amp;|lt;|gt;|quot;|apos;)/g)).toBeNull()
+      expect(svg.match(/<style>/g)?.length).toBe(1)
+    }
+})
+
+test('each wave and mood shows in the scene, in both themes', () => {
+  for (const [name, draw] of Object.entries(SCENES)) {
+    expect(draw(CALM)).not.toMatch(/class="shoot"|class="rim"|animation:flare/)
+    expect(draw({ ...CALM, state: 'thinking' })).toMatch(/class="shoot"/)
+    expect(draw({ ...CALM, state: 'waiting' })).toMatch(/class="rim"/)
+    expect(draw({ ...CALM, flare: true })).toMatch(/animation:flare/)
+    expect(draw({ ...CALM, tide: true })).toMatch(/translate\(0 -60\)/)
+    expect(draw(CALM)).toMatch(/translate\(0 -46\)/)
+    const calm = draw(CALM), yellow = draw({ ...CALM, wave: 'waiting' }), red = draw({ ...CALM, wave: 'error' })
+    expect(new Set([calm, yellow, red]).size).toBe(3)
+    expect(red).toMatch(/fill="#ff5a6e"/)
+    expect(name).toBeDefined()
+  }
+  // (Narsil Light's yellow is a softer one, so the words over it read)
+  expect(SCENES.narsil!({ ...CALM, wave: 'waiting' })).toMatch(/fill="#ffc94d"/)
+  expect(SCENES['narsil-light']!({ ...CALM, wave: 'waiting' })).toMatch(/fill="#f7b529"/)
+})
+
+test('the Backdrop draws its own scenes on desktop and mobile, and leaves the rest to the engine', async ($, on) => {
+  world($, on, { files: { [win(MINE, 'my-dusk.json')]: JSON.stringify(OWN), [win(MINE, 'my-dusk.svg')]: SVG } })
+  on('ui.render', { component: 'Backdrop' }, ($, e) => $.ui.resolve(e).Box({}))
+  await begin($)
+  expect(await scene($, 'narsil')).toMatch(/crescent moon/)
+  expect(await scene($, 'narsil-light', 'mobile')).toMatch(/turning sun/)
+  expect(await scene($, 'my-dusk')).toBe(SVG)
+  expect(await scene($, 'unknown')).toBe('')
+})
+
+test('removing takes out only our entries from a shared slot, and the whole slot when it was ours', () => {
   const war = [{ resources: ['theme.json', 'event.json'], matches: ['<all_urls>'] }]
   const shared = withoutOurs({ content_scripts: [{ js: ['splash.js'] }, { js: ['theme.js'] }], web_accessible_resources: war })
   expect(shared?.content_scripts).toEqual([{ js: ['splash.js'] }])
@@ -47,183 +144,87 @@ test('removing takes out only our entries from a shared slot, and the whole slot
   expect(withoutOurs({ content_scripts: [{ js: ['theme.js'] }], web_accessible_resources: war })).toBeUndefined()
 })
 
-const PANE = {
-  plugin: 'narsil-skin',
-  surface: 'desktop',
-  component: 'Pane',
-  requestId: 'themes',
-  props: { title: 'Themes', isFocused: false, bodyColumns: 60, placement: 'dock', scroll: { offset: 0, bodyRows: 40 }, view: {} },
-} as const
-
-test('/narsil-skin themes opens the side pane, a button per theme, and Close closes it', async ($, on) => {
-  on('ui.render', { component: 'AbovePrompt' }, ($, e) => $.ui.resolve(e).Box({}))
+test('/narsil-skin themes opens the side pane with a button per theme and no install step, and Close closes it', async ($, on) => {
   const opened: string[] = [], closed: string[] = []
-  on('ui.open', ($, e) => { opened.push(e.id); return { value: { isPlaced: true } } })
-  on('ui.close', ($, e) => { closed.push(e.id); return { value: undefined } })
-  // the extension is copied and Claude Desktop restarted once `restarted` is true
-  let restarted = false
-  on('env.get', ($, e) =>
-    ({ value: e.name === 'APPDATA' ? 'C:\\AppData' : e.name === 'REACT_PROFILE' && restarted ? '1' : undefined }))
-  on('fs.read', ($, e) => {
-    if (restarted && e.path.endsWith('manifest.json')) return { value: '{"content_scripts":[{"js":["theme.js"]}]}' }
-    throw new Error('ENOENT')
+  world($, on, {
+    files: { [win(MINE, 'my-dusk.json')]: JSON.stringify(OWN) },
+    hooks: {
+      'ui.open': ($: any, e: any) => { opened.push(e.id); return { value: { isPlaced: true } } },
+      'ui.close': ($: any, e: any) => { closed.push(e.id); return { value: undefined } },
+    },
   })
-  const props = { hasSurvey: false, isWorking: false, maxRows: 40, columns: 100 }
-  const result = await $.command.run({ command: 'narsil-skin', args: 'themes' })
+  const result = await run($, 'themes')
   expect(result.text).toMatch(/side pane/)
   expect(opened).toEqual(['themes'])
-  // nothing is drawn above the prompt any more
-  const band = await $.ui.mount({ plugin: 'narsil-skin', surface: 'desktop', component: 'AbovePrompt', props })
-  expect(await band.find({ key: 'close' })).toBeUndefined()
-  expect(await band.find({ key: 'install' })).toBeUndefined()
-  await band.unmount()
-  const bare = await $.ui.mount(PANE)
-  expect(await bare.find({ key: 'install' })).toBeDefined()
-  for (const t of THEMES) expect(await bare.find({ key: `use-${t.id}` })).toBeUndefined()
-  await bare.unmount()
-  restarted = true
-  await $.command.run({ command: 'narsil-skin', args: 'themes' })
   const ui = await $.ui.mount(PANE)
   expect(await ui.find({ key: 'install' })).toBeUndefined()
-  expect(await ui.find({ key: 'remove' })).toBeDefined()
-  for (const t of THEMES) expect(await ui.find({ key: `use-${t.id}` })).toBeDefined()
+  expect(await ui.find({ key: 'remove' })).toBeUndefined()
+  for (const id of [...THEMES.map(t => t.id), 'my-dusk']) expect(await ui.find({ key: `use-${id}` })).toBeDefined()
   await ui.press({ key: 'close' })
   await ui.unmount()
   expect(closed).toEqual(['themes'])
 })
 
+test('only /narsil-skin is registered: its themes opens the pane, and anything else shows the help', async ($, on) => {
+  const registered: string[] = []
+  world($, on, { hooks: { 'command.register': ($: any, e: any) => { registered.push(e.name); return { value: { command: e.name } } } } })
+  await begin($)
+  expect(registered).toEqual(['narsil-skin'])
+  expect((await run($, 'themes')).text).toMatch(/side pane/)
+  for (const args of ['', 'help', 'nope']) {
+    const help = await run($, args)
+    expect(help.text).toMatch(/\/narsil-skin themes/)
+    expect(help.text).toMatch(/\/narsil-skin:make-theme/)
+  }
+})
 
-test('on macOS the pane installs into Application Support and sets REACT_PROFILE with launchctl, and removes both', async ($, on) => {
-  on('ui.open', () => ({ value: { isPlaced: true } }))
+const OLD = '{"content_scripts":[{"matches":["<all_urls>"],"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}'
+
+test('on macOS the old extension is offered for removal, and removing it takes its folder and REACT_PROFILE', async ($, on) => {
   const home = '/Users/p', support = `${home}/Library/Application Support`
   const slot = `${support}/Claude/extensions/fmkadmapgofadopljbjfkapdkoienihi`
   const agent = `${home}/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`
-  // a small disk: what the mod writes, and its own extension's files as a stand-in
-  const disk = new Map<string, string>()
-  const runs: string[][] = []
-  on('env.get', ($, e) => ({ value: e.name === 'HOME' ? home : undefined }))
   // (run on Windows, the engine hands these hooks /Users/p as E:\Users\p)
-  const posix = (p: string) => p.replace(/^[A-Za-z]:/, '').replaceAll('\\', '/')
-  on('fs.exists', ($, e) => ({ value: posix(e.path) === `${support}/Claude` || disk.has(posix(e.path)) }))
-  on('fs.list', () => ({ value: [] }))
-  on('fs.write', ($, e) => { disk.set(posix(e.path), e.text); return { value: undefined } })
-  on('fs.read', ($, e) => {
-    const path = posix(e.path)
-    if (disk.has(path)) return { value: disk.get(path)! }
-    if (path.endsWith('/extension/manifest.json'))
-      return { value: '{"content_scripts":[{"matches":["<all_urls>"],"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}' }
-    if (path.includes('/extension/src/')) return { value: '' }
-    throw new Error('ENOENT')
+  const posix = (p: string) => p.replace(/^[A-Za-z]:/, '').split(String.fromCharCode(92)).join('/')
+  const { runs } = world($, on, {
+    env: { USERPROFILE: '', APPDATA: '', HOME: home },
+    hooks: {
+      'fs.exists': ($: any, e: any) => ({ value: posix(e.path) === `${support}/Claude` }),
+      'fs.read': ($: any, e: any) => {
+        if (posix(e.path) === `${slot}/manifest.json`) return { value: OLD }
+        throw new Error('ENOENT')
+      },
+    },
   })
-  on('process.run', ($, e) => {
-    runs.push([...e.argv])
-    return { value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
-  })
-  const props = { hasSurvey: false, isWorking: false, maxRows: 40, columns: 100 }
-
-  await $.command.run({ command: 'narsil-skin', args: 'themes' })
-  const bare = await $.ui.mount(PANE)
-  await bare.press({ key: 'install' })
-  await bare.unmount()
-  expect(disk.has(`${slot}/theme.js`)).toBe(true)
-  expect(disk.get(`${slot}/manifest.json`)).toMatch(/"theme\.js"/)
-  expect(disk.get(agent)).toMatch(/<string>REACT_PROFILE<\/string><string>1<\/string>/)
-  expect(runs).toContainEqual(['launchctl', 'setenv', 'REACT_PROFILE', '1'])
-
+  await run($, 'themes')
   const ui = await $.ui.mount(PANE)
-  expect((await ui.find({ type: 'Text', text: /Cmd\+Q/ }))?.text).toMatch(/Quit Claude Desktop fully \(Cmd\+Q\)/)
+  expect((await ui.find({ type: 'Text', text: /old extension/ }))?.text).toMatch(/still installed/)
   await ui.press({ key: 'remove' })
+  expect(await ui.find({ key: 'remove' })).toBeUndefined()
   await ui.unmount()
   expect(runs).toContainEqual(['launchctl', 'unsetenv', 'REACT_PROFILE'])
   expect(runs).toContainEqual(['rm', '-f', agent])
   expect(runs).toContainEqual(['rm', '-rf', slot])
 })
 
-test('only /narsil-skin is registered: its themes opens the pane, and anything else shows the help', async ($, on) => {
-  const registered: string[] = []
-  on('command.register', ($, e) => { registered.push(e.name); return { value: { command: e.name } } })
-  on('session.start', (_, e) => ({ cwd: e.cwd }))
-  const opened: string[] = []
-  on('ui.open', ($, e) => { opened.push(e.id); return { value: { isPlaced: true } } })
-  on('env.get', () => ({ value: undefined }))
-  on('fs.read', () => { throw new Error('ENOENT') })
-  await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
-  expect(registered).toEqual(['narsil-skin'])
-  const viaGroup = await $.command.run({ command: 'narsil-skin', args: 'themes' })
-  expect(viaGroup.text).toMatch(/side pane/)
-  expect(opened).toEqual(['themes'])
-  for (const args of ['', 'help', 'nope']) {
-    const help = await $.command.run({ command: 'narsil-skin', args })
-    expect(help.text).toMatch(/\/narsil-skin themes/)
-    expect(help.text).toMatch(/\/narsil-skin:make-theme/)
-    expect(help.text).not.toMatch(/\/themes/)
-  }
-  expect(opened).toEqual(['themes'])
-})
-
-// (Windows paths built with the separator by code, so this file holds no backslash to escape)
-const win = (...parts: string[]) => parts.join(String.fromCharCode(92))
-const slash = (p: string) => p.split(String.fromCharCode(92)).join('/')
-
-test('on Windows the pane installs into the Claude-Data folder the app reads, when there is one', async ($, on) => {
-  on('ui.open', () => ({ value: { isPlaced: true } }))
-  const local = win('C:', 'Users', 'p', 'AppData', 'Local'), dataRoot = win(local, 'Claude-Data')
-  const data = win(dataRoot, 'claude_abc'), slot = win(data, 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
-  const devtools = JSON.stringify({ name: 'React Developer Tools',
-    content_scripts: [{ matches: ['<all_urls>'], js: ['build/prepareInjection.js'] }],
-    web_accessible_resources: [{ resources: ['build/*.js'] }] })
-  const disk = new Map<string, string>([[win(slot, 'manifest.json'), devtools]])
-  const runs: string[][] = []
-  const env: Record<string, string> = { APPDATA: win('C:', 'Users', 'p', 'AppData', 'Roaming'), LOCALAPPDATA: local, USERPROFILE: win('C:', 'Users', 'p') }
-  on('env.get', ($, e) => ({ value: env[e.name] }))
-  on('fs.exists', ($, e) => ({ value: e.path === dataRoot || e.path === win(data, 'Local State') || disk.has(e.path) }))
-  on('fs.list', ($, e) => ({ value: e.path === dataRoot ? [{ name: 'claude_abc', kind: 'dir' }] : [] }))
-  on('fs.write', ($, e) => { disk.set(e.path, e.text); return { value: undefined } })
-  on('fs.read', ($, e) => {
-    if (disk.has(e.path)) return { value: disk.get(e.path)! }
-    if (slash(e.path).endsWith('/extension/manifest.json'))
-      return { value: '{"content_scripts":[{"matches":["<all_urls>"],"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}' }
-    if (slash(e.path).includes('/extension/src/')) return { value: '' }
-    throw new Error('ENOENT')
+test('on Windows the old extension is found in the Claude-Data folder, and a shared slot keeps the other mod', async ($, on) => {
+  const local = win(HOME, 'AppData', 'Local'), data = win(local, 'Claude-Data', 'claude_abc')
+  const slot = win(data, 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
+  const shared = '{"content_scripts":[{"js":["splash.js"]},{"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}'
+  const { runs, files } = world($, on, {
+    env: { LOCALAPPDATA: local },
+    files: { [win(data, 'Local State')]: '{}', [win(slot, 'manifest.json')]: shared },
+    hooks: {
+      'fs.list': ($: any, e: any) =>
+        ({ value: e.path === win(local, 'Claude-Data') ? [{ name: 'claude_abc', kind: 'dir', size: 0, mtimeMs: 0 }] : [] }),
+    },
   })
-  on('process.run', ($, e) => {
-    runs.push([...e.argv])
-    return { value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
-  })
-  await $.command.run({ command: 'narsil-skin', args: 'themes' })
-  const bare = await $.ui.mount(PANE)
-  await bare.press({ key: 'install' })
-  await bare.unmount()
-  expect(disk.has(win(slot, 'theme.js'))).toBe(true)
-  const manifest = JSON.parse(disk.get(win(slot, 'manifest.json'))!)
-  expect(manifest.name).toBe('React Developer Tools')
-  expect(manifest.content_scripts.map((s: { js: string[] }) => s.js[0])).toEqual(['build/prepareInjection.js', 'theme.js'])
-  expect([...disk.keys()].some(k => k.includes('Roaming'))).toBe(false)
-  expect(runs).toContainEqual(['setx', 'REACT_PROFILE', '1'])
-})
-
-test('on Windows without a Claude-Data folder the pane keeps installing into AppData Roaming', async ($, on) => {
-  on('ui.open', () => ({ value: { isPlaced: true } }))
-  const roaming = win('C:', 'Users', 'p', 'AppData', 'Roaming')
-  const slot = win(roaming, 'Claude', 'extensions', 'fmkadmapgofadopljbjfkapdkoienihi')
-  const disk = new Map<string, string>()
-  const env: Record<string, string> = { APPDATA: roaming, LOCALAPPDATA: win('C:', 'Users', 'p', 'AppData', 'Local'), USERPROFILE: win('C:', 'Users', 'p') }
-  on('env.get', ($, e) => ({ value: env[e.name] }))
-  on('fs.exists', ($, e) => ({ value: disk.has(e.path) }))
-  on('fs.list', () => ({ value: [] }))
-  on('fs.write', ($, e) => { disk.set(e.path, e.text); return { value: undefined } })
-  on('fs.read', ($, e) => {
-    if (disk.has(e.path)) return { value: disk.get(e.path)! }
-    if (slash(e.path).endsWith('/extension/manifest.json'))
-      return { value: '{"content_scripts":[{"matches":["<all_urls>"],"js":["theme.js"]}],"web_accessible_resources":[{"resources":["theme.json"]}]}' }
-    if (slash(e.path).includes('/extension/src/')) return { value: '' }
-    throw new Error('ENOENT')
-  })
-  on('process.run', () => ({ value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
-  await $.command.run({ command: 'narsil-skin', args: 'themes' })
-  const bare = await $.ui.mount(PANE)
-  await bare.press({ key: 'install' })
-  await bare.unmount()
-  expect(disk.has(win(slot, 'theme.js'))).toBe(true)
-  expect(disk.get(win(slot, 'manifest.json'))).toMatch(/"theme\.js"/)
+  await run($, 'themes')
+  const ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'remove' })
+  await ui.unmount()
+  expect(JSON.parse(files[win(slot, 'manifest.json')]!).content_scripts).toEqual([{ js: ['splash.js'] }])
+  expect(runs[0]!.slice(0, 3)).toEqual(['cmd', '/c', 'del'])
+  expect(runs[0]).toContain(win(slot, 'theme.js'))
+  expect(runs.flat()).not.toContain('rmdir')
 })

@@ -1,45 +1,10 @@
 import { expect, test } from 'claude-code/testing'
 
 import { isDay } from '../hooks/register'
+import { PANE, SLOT, begin, run, scene, win, world } from './world'
 
-const SLOT = 'C:\\AppData\\Claude\\extensions\\fmkadmapgofadopljbjfkapdkoienihi'
-const THEME = `${SLOT}\\theme.json`
-const PANE = {
-  plugin: 'narsil-skin',
-  surface: 'desktop',
-  component: 'Pane',
-  requestId: 'themes',
-  props: { title: 'Themes', isFocused: false, bodyColumns: 60, placement: 'dock', scroll: { offset: 0, bodyRows: 40 }, view: {} },
-} as const
-
-// The engine beneath the mod, with the extension installed and the slot's files in memory
-const world = (on: any, saved = '{"id":"narsil"}') => {
-  const files: Record<string, string> = { [THEME]: saved, [`${SLOT}\\manifest.json`]: '{"content_scripts":[{"js":["theme.js"]}]}' }
-  on('command.register', () => ({ value: { command: 'narsil-skin' } }))
-  on('session.start', (_: any, e: any) => ({ cwd: e.cwd }))
-  on('turn.start', (_: any, e: any) => ({ turnId: e.turnId, text: e.text }))
-  on('env.get', (_: any, e: any) => ({ value: e.name === 'APPDATA' ? 'C:\\AppData' : e.name === 'REACT_PROFILE' ? '1' : undefined }))
-  on('session.id', () => ({ value: 'me' }))
-  on('ui.open', () => ({ value: { isPlaced: true } }))
-  on('ui.status', () => ({ value: undefined }))
-  on('ui.toast', () => ({ value: undefined }))
-  on('clock.every', () => ({ value: undefined }))
-  on('fs.read', (_: any, e: any) => {
-    if (e.path in files) return { value: files[e.path] }
-    throw new Error('ENOENT')
-  })
-  on('fs.write', (_: any, e: any) => { files[e.path] = e.text; return { value: undefined } })
-  on('fs.list', (_: any, e: any) => ({
-    value: Object.keys(files).filter(p => p.startsWith(`${e.path}\\`))
-      .map(p => ({ name: p.slice(e.path.length + 1), kind: 'file', size: files[p]!.length, mtimeMs: 0 })),
-  }))
-  return { files, theme: () => JSON.parse(files[THEME]!) }
-}
-const begin = ($: any) => $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
-const open = async ($: any) => {
-  await $.command.run({ command: 'narsil-skin', args: 'themes' })
-  return $.ui.mount(PANE)
-}
+const hourTheme = () => (isDay(new Date().getHours()) ? 'narsil-light' : 'narsil')
+const last = (sets: any[]) => sets[sets.length - 1]
 
 test('it is day from 6:00 to 17:59, and night from 18:00 to 5:59', () => {
   expect([0, 5].map(isDay)).toEqual([false, false])
@@ -47,54 +12,114 @@ test('it is day from 6:00 to 17:59, and night from 18:00 to 5:59', () => {
   expect([18, 23].map(isDay)).toEqual([false, false])
 })
 
-test('the auto button writes the day and night themes, each whole, for the page to choose by the hour', async ($, on) => {
-  const { theme } = world(on)
+test('the auto button keeps auto and paints the theme of the hour, colors and scene', async ($, on) => {
+  const { store, sets } = world($, on)
   await begin($)
-  const ui = await open($)
+  const ui = await $.ui.mount(PANE)
   await ui.press({ key: 'auto' })
   await ui.unmount()
-  const t = theme()
-  expect(t).toMatchObject({ id: 'auto', auto: true })
-  expect(t.day).toMatchObject({ id: 'narsil-light', bg: '#c9e7f1', wallpaper: 'narsil-light' })
-  expect(t.night).toMatchObject({ id: 'narsil', bg: '#0f1a2c', wallpaper: 'narsil' })
+  expect(store.current).toBe('auto')
+  expect(last(sets).backdrop).toMatchObject({ scene: hourTheme(), glass: { opacity: .4 } })
+  expect(last(sets).colors).toBeDefined()
 })
 
 test('picking a theme by hand turns auto off', async ($, on) => {
-  const { theme } = world(on, '{"id":"auto","auto":true,"day":{},"night":{}}')
+  const { store, sets } = world($, on, { store: { current: 'auto' } })
   await begin($)
-  const ui = await open($)
+  const ui = await $.ui.mount(PANE)
   await ui.press({ key: 'use-narsil' })
   await ui.unmount()
-  expect(theme().id).toBe('narsil')
-  expect(theme().auto).toBeUndefined()
+  expect(store.current).toBe('narsil')
+  expect(last(sets).backdrop.scene).toBe('narsil')
 })
 
 test('pressing auto again turns it off and keeps the theme of the hour', async ($, on) => {
-  const { theme } = world(on, '{"id":"auto","auto":true,"day":{},"night":{}}')
+  const { store, sets } = world($, on, { store: { current: 'auto' } })
   await begin($)
-  const ui = await open($)
+  const ui = await $.ui.mount(PANE)
   await ui.press({ key: 'auto' })
   await ui.unmount()
-  expect(theme().auto).toBeUndefined()
-  expect(theme().id).toBe(isDay(new Date().getHours()) ? 'narsil-light' : 'narsil')
+  expect(store.current).toBe(hourTheme())
+  expect(last(sets).backdrop.scene).toBe(hourTheme())
 })
 
-test('changing the wallpaper speed keeps auto on, and both themes get it', async ($, on) => {
-  const { theme } = world(on, '{"id":"auto","auto":true,"day":{},"night":{}}')
+test('changing the wallpaper speed keeps auto on, is kept, and the scene moves faster', async ($, on) => {
+  const { store } = world($, on, { store: { current: 'auto' } })
   await begin($)
-  const ui = await open($)
+  const breath = async () => Number(/animation:breath ([\d.]+)s/.exec(await scene($, hourTheme()))?.[1])
+  const before = await breath()
+  const ui = await $.ui.mount(PANE)
   await ui.press({ key: 'speed' })
   await ui.unmount()
-  const t = theme()
-  expect(t.auto).toBe(true)
-  expect(t.speed).toBe(8)
-  expect(t.day.speed).toBe(8)
-  expect(t.night.speed).toBe(8)
+  expect(store.current).toBe('auto')
+  expect(store.speed).toBe(8)
+  expect(Math.round((before / await breath()) * 10) / 10).toBe(2)
 })
 
-test('a session started under auto keeps auto on and still drives the reactions', async ($, on) => {
-  const { files } = world(on, '{"id":"auto","auto":true,"speed":2,"day":{},"night":{}}')
+test('the panels button steps the app\'s panels from 40% to clear glass over the wallpaper, and is kept', async ($, on) => {
+  const { store, sets } = world($, on, { store: { current: 'narsil' } })
   await begin($)
+  expect(last(sets).backdrop.glass.opacity).toBe(.4)
+  const ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'veil' })
+  expect(store.veil).toBe(.6)
+  expect(last(sets).backdrop.glass).toMatchObject({ opacity: .6, tint: '#0f1a2c' })
+  await ui.press({ key: 'veil' })
+  await ui.press({ key: 'veil' })
+  await ui.unmount()
+  expect(store.veil).toBe(0)
+  expect(last(sets).backdrop.glass.opacity).toBe(0)
+})
+
+test('over a live wallpaper the themes pane opens with no ground of its own, over plain colors it keeps the app\'s', async ($, on) => {
+  const opens: any[] = []
+  const { store } = world($, on, {
+    store: { current: 'narsil' },
+    hooks: { 'ui.open': ($: any, e: any) => { opens.push(e); return { value: { isPlaced: true } } } },
+  })
+  await begin($)
+  await run($, 'themes')
+  expect(opens[0].backgroundColor).toBe('transparent')
+  store.current = 'claude'
   await $.turn.start({ text: '', turnId: 't1' })
-  expect(JSON.parse(files[`${SLOT}\\event.json`]!)).toMatchObject({ tide: true })
+  await run($, 'themes')
+  expect(opens[1].backgroundColor).toBeUndefined()
+})
+
+test('a session started under auto paints the theme of the hour and still drives the reactions', async ($, on) => {
+  const { sets, sky } = world($, on, { store: { current: 'auto' } })
+  await begin($)
+  expect(last(sets).backdrop.scene).toBe(hourTheme())
+  await $.turn.start({ text: '', turnId: 't1' })
+  expect(await sky()).toMatchObject({ tide: true })
+})
+
+test('the first start after the update takes the old extension\'s choice and speed', async ($, on) => {
+  const { store, sets } = world($, on, { files: { [win(SLOT, 'theme.json')]: '{"id":"narsil-light","speed":8}' } })
+  await begin($)
+  expect(store).toMatchObject({ current: 'narsil-light', speed: 8 })
+  expect(last(sets).backdrop.scene).toBe('narsil-light')
+})
+
+test('a theme picked in another conversation reaches this one at its next turn, and is set once', async ($, on) => {
+  const { store, sets } = world($, on, { store: { current: 'narsil' } })
+  await begin($)
+  expect(last(sets).backdrop.scene).toBe('narsil')
+  store.current = 'narsil-light'
+  await $.turn.start({ text: '', turnId: 't1' })
+  expect(last(sets).backdrop.scene).toBe('narsil-light')
+  const count = sets.length
+  await $.turn.start({ text: '', turnId: 't2' })
+  expect(sets.length).toBe(count)
+})
+
+test('Claude clears the theme this conversation set, and a start on Claude clears nobody\'s', async ($, on) => {
+  const { clears } = world($, on)
+  await begin($)
+  expect(clears.length).toBe(0)
+  const ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'use-narsil' })
+  await ui.press({ key: 'use-claude' })
+  await ui.unmount()
+  expect(clears.length).toBe(1)
 })
