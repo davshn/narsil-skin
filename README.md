@@ -7,8 +7,6 @@
 
 Narsil Skin is the third mod in the [Narsil](https://github.com/davshn/narsil-pet) family, alongside [Narsil Check](https://github.com/davshn/narsil-check): it reskins the Claude desktop app. It applies live color themes and animated wallpapers drawn with characters that move behind the chat, through the app's own theme API. Themes are picked from a side pane with `/narsil-skin themes`, so the space above the prompt stays free for Narsil.
 
-It is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), by [0toshigami](https://github.com/0toshigami): all the original work, the design, and the themes are theirs. See [Credits](#credits).
-
 It is an **open source** Claude Code mod, released under the [MIT](#license) license.
 
 ## Contents
@@ -20,7 +18,6 @@ It is an **open source** Claude Code mod, released under the [MIT](#license) lic
 - [Uninstalling](#uninstalling)
 - [Security](#security)
 - [Development](#development)
-- [Credits](#credits)
 - [License](#license)
 
 ## Features
@@ -162,7 +159,7 @@ A theme is data only. Its colors go to the app through the theme API, and an ani
 
 ## Development
 
-Narsil Skin is open source and contributions are welcome: open an issue or a pull request on [GitHub](https://github.com/davshn/narsil-skin). Improvements that help everyone are also welcome in the [original project](https://github.com/0toshigami/claude-desktop-themes).
+Narsil Skin is open source and contributions are welcome: open an issue or a pull request on [GitHub](https://github.com/davshn/narsil-skin).
 
 To work on a local copy, add its folder as a marketplace; changes arrive with `/reload-plugins`, without reinstalling:
 
@@ -181,18 +178,10 @@ claude plugin test .
 - `tools/thumbs/`: the thumbnail capture.
 - `tests/`: the tests.
 
-## Credits
-
-Narsil Skin is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), created by [0toshigami](https://github.com/0toshigami). The themes, the animated wallpapers, the original extension, and the `make-theme` skill are their work. This fork is maintained by [davshn](https://github.com/davshn), who moved the theme picker to a side pane to keep the space above the prompt free.
-
-Thanks also to [@handsher_NGU](https://x.com/handsher_NGU/status/2115618341675319417/video/1), whose post gave the idea for the original mod.
-
-It is a community mod: it is not made or endorsed by Anthropic. Claude, Claude Desktop, Claude Code, and Clawd belong to Anthropic.
-
 ## License
 
-Narsil Skin is released under the [MIT license](LICENSE), the same as the original project, whose copyright notice is kept in [LICENSE](LICENSE).
+Narsil Skin is released under the [MIT license](LICENSE).
 
-In short: you can use, copy, modify, and distribute it freely, including in closed-source projects, as long as you keep the copyright notice and the license text. It comes with no warranty.
+In short: you can use, copy, modify, and distribute it freely, including in closed-source projects, as long as you keep the copyright notices and the license text in [LICENSE](LICENSE). It comes with no warranty.
 
-Copyright © 2026 0toshigami
+It is a community mod: it is not made or endorsed by Anthropic. Claude, Claude Desktop, Claude Code, and Clawd belong to Anthropic.

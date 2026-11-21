@@ -2,7 +2,7 @@
   "name": "narsil-skin",
   "displayName": "Narsil Skin",
   "version": "2.0.0",
-  "description": "Themes and live ASCII wallpapers for Claude Desktop, picked from a side pane with /narsil-skin themes; the make-theme skill makes your own. A fork of 0toshigami/claude-desktop-themes",
+  "description": "Themes and live ASCII wallpapers for Claude Desktop, picked from a side pane with /narsil-skin themes; the make-theme skill makes your own.",
   "author": { "name": "davshn", "url": "https://github.com/davshn" },
   "homepage": "https://github.com/davshn/narsil-skin",
   "repository": "https://github.com/davshn/narsil-skin",

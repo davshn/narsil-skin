@@ -1,7 +1,7 @@
 {
   "name": "narsil-skin",
   "owner": { "name": "davshn", "url": "https://github.com/davshn" },
-  "description": "Themes and live ASCII wallpapers for Claude Desktop, a fork of 0toshigami/claude-desktop-themes",
+  "description": "Themes and live ASCII wallpapers for Claude Desktop",
   "plugins": [
     {
       "name": "narsil-skin",
