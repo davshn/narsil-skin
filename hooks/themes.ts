@@ -44,6 +44,10 @@ export const preview = (t: Theme) => {
 </svg>`
 }
 
+// What the Backdrop refuses in a scene, by its documented rules: a scene holding one is not drawn at all
+const REFUSED = /<image|feImage|foreignObject|data:|base64|@import|@font-face|image-set\(|<!DOCTYPE|<!ENTITY|CDATA|<\?|\\|href\s*=\s*["'](?!#)|url\(\s*["']?(?!#)/i
+export const sceneTaken = (svg: string) => svg.length <= SCENE_MAX && /^\s*<svg[\s>]/.test(svg) && !REFUSED.test(svg)
+
 // A person's own theme: <id>.json with its page, text and accent colors; svg: its <id>.svg scene, when there is one
 export const parseUserTheme = (json: string, svg?: string): Theme | undefined => {
   let t: Record<string, unknown>
@@ -55,7 +59,7 @@ export const parseUserTheme = (json: string, svg?: string): Theme | undefined =>
   const s = t.status as Record<string, unknown> | undefined
   const status = s && ['idle', 'tool', 'error', 'done'].every(k => str(s[k], 80))
     ? { idle: String(s.idle), tool: String(s.tool), error: String(s.error), done: String(s.done) } : undefined
-  const scene = svg && svg.length <= SCENE_MAX && /^\s*<svg[\s>]/.test(svg) ? svg : undefined
+  const scene = svg && sceneTaken(svg) ? svg : undefined
   return {
     id: t.id, name: String(t.name), tagline: str(t.tagline, 200) ? String(t.tagline) : '',
     palette: paletteOf(t.bg.toLowerCase(), t.text.toLowerCase(), t.accent.toLowerCase()),

@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, ThemeColors, ThemeSetArgs } from 'claude-code'
 
 import type { Mood as State, Theme, Wave } from '../types'
-import { colorsOf } from './look'
+import { BLOCKING, colorsOf } from './look'
 import { SCENES } from './scenes'
 import { THEMES, parseUserTheme, tile } from './themes'
 
@@ -185,14 +185,24 @@ const active = async ($: EngineInterface) => {
   return id === 'claude' ? undefined : allThemes().find(t => t.id === id)
 }
 
-const colorsCache = new Map<string, ThemeColors>()
+// by palette, not by id: a person's theme edited and picked again is built anew
+const colorsCache = new Map<string, { theme: ThemeColors; problems: string[] }>()
 const colorsFor = (t: Theme) => {
-  let c = colorsCache.get(t.id)
-  if (!c) colorsCache.set(t.id, c = colorsOf(t.name, t.palette!).theme)
+  const key = JSON.stringify([t.name, t.palette])
+  let c = colorsCache.get(key)
+  if (!c) colorsCache.set(key, c = colorsOf(t.name, t.palette!))
   return c
 }
+// why Desktop would not paint a theme, or undefined when it would
+const refusal = (t: Theme) => {
+  try {
+    return colorsFor(t).problems.find(l => l.startsWith(BLOCKING))
+  } catch (err) {
+    return err instanceof Error ? err.message : String(err)
+  }
+}
 export const lookOf = (t: Theme, glass: number): ThemeSetArgs => ({
-  colors: colorsFor(t),
+  colors: colorsFor(t).theme,
   ...(t.wallpaper ? { backdrop: { scene: t.wallpaper, glass: { blur: 12, tint: t.palette!.surfaces[0], opacity: glass } } } : {}),
 })
 
@@ -203,7 +213,7 @@ const apply = async ($: EngineInterface, force = false) => {
   const glass = await read($, veil)
   const key = t ? `${t.id}@${glass}` : ''
   if (!force && key === (drawn ?? '')) return
-  if (!t) {
+  if (!t || refusal(t)) {
     if (drawn) await $.theme.clear()
     drawn = ''
     return
@@ -216,6 +226,9 @@ const statusOf = (t: Theme | undefined, kind: 'idle' | 'tool' | 'error' | 'done'
   t?.status?.[kind].split('{tool}').join(tool)
 
 const choose = async ($: EngineInterface, id: string, label: string) => {
+  const t = id === AUTO ? ofTheHour() : allThemes().find(t => t.id === id)
+  const why = t?.palette && refusal(t)
+  if (why) return void $.ui.toast(`Desktop won't paint ${label}, so it stays as it is. ${why}`)
   await update($, current, () => id)
   await $.store.set('current', id)
   await apply($, true)
@@ -311,10 +324,12 @@ const publish = ($: EngineInterface) => {
   return queue
 }
 
-// the stars, or the sun, flare for a moment when a turn ends
+// the stars, or the sun, flare for a moment when a turn ends; a later flare is not cut short by an earlier one's end
+let flares = 0
 const flare = async ($: EngineInterface) => {
+  const mine = ++flares
   await update($, sky, s => ({ ...s, flare: true }))
-  void $.clock.sleep(1300).then(() => update($, sky, s => ({ ...s, flare: false }))).catch(() => {})
+  void $.clock.sleep(1300).then(() => (mine === flares ? update($, sky, s => ({ ...s, flare: false })) : undefined)).catch(() => {})
 }
 
 // every BEAT: this conversation's report, the pooled wave, and the choice another conversation made
@@ -348,9 +363,10 @@ export const register: Register = on => {
         if (old.id) await $.store.set('current', old.id)
         if (SPEEDS.includes(old.speed as number)) await $.store.set('speed', old.speed)
       }
+      // (the beat first: the wave keeps counting this conversation even if its theme can't be set)
+      $.clock.every(BEAT, () => void beat($).catch(() => {}))
       await follow($)
       $.ui.status(statusOf(await active($), 'idle'))
-      $.clock.every(BEAT, () => void beat($).catch(() => {}))
     } catch {}
     return next(e)
   })

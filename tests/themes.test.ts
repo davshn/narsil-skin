@@ -21,6 +21,10 @@ test('a person\'s own theme is read from its colors, its scene from its svg, and
   expect(live).toMatchObject({ wallpaper: 'my-dusk', scene: SVG })
   expect(parseUserTheme(JSON.stringify(OWN), 'not svg')?.wallpaper).toBeUndefined()
   expect(parseUserTheme(JSON.stringify(OWN), `<svg>${'x'.repeat(SCENE_MAX)}</svg>`)?.wallpaper).toBeUndefined()
+  for (const bad of ['<image href="x.png"/>', '<use href="other.svg#a"/>', '<style>@import "x.css";</style>',
+    '<rect fill="url(data:x)"/>', '<foreignObject/>'])
+    expect(parseUserTheme(JSON.stringify(OWN), SVG.replace('</svg>', `${bad}</svg>`))?.wallpaper).toBeUndefined()
+  expect(parseUserTheme(JSON.stringify(OWN), SVG.replace('</svg>', '<rect fill="url(#g)"/></svg>'))?.wallpaper).toBe('my-dusk')
   expect(parseUserTheme('{"id":"x y","name":"n","bg":"#000000","text":"#ffffff","accent":"#ff0000"}')).toBeUndefined()
   expect(parseUserTheme('{"id":"ok-id","name":"n","bg":"red","text":"#ffffff","accent":"#ff0000"}')).toBeUndefined()
   expect(parseUserTheme('not json')).toBeUndefined()
@@ -40,6 +44,51 @@ test('every theme paints on Desktop, has a tile the desktop takes, and Claude ha
   expect([day?.mode, day?.surfaces[0], day?.roles.accent]).toEqual(['light', '#c9e7f1', '#1f83a8'])
   expect(lookOf(THEMES[1]!, .4).backdrop).toEqual({ scene: 'narsil', glass: { blur: 12, tint: '#0f1a2c', opacity: .4 } })
   expect(lookOf(own, .4).backdrop).toBeUndefined()
+})
+
+// well-known palettes, faint or light-paged among them: each must paint, as a person writes it in <id>.json
+const KNOWN: [string, string, string, string][] = [
+  ['solarized-dark', '#002b36', '#839496', '#268bd2'], ['nord', '#2e3440', '#d8dee9', '#88c0d0'],
+  ['tokyo-night', '#1a1b26', '#a9b1d6', '#7aa2f7'], ['gruvbox-dark', '#3c3836', '#ebdbb2', '#fabd2f'],
+  ['solarized-light', '#fdf6e3', '#657b83', '#268bd2'], ['latte', '#eff1f5', '#4c4f69', '#1e66f5'],
+  ['tan-paper', '#d2b48c', '#2b1d0e', '#8b4513'], ['sage', '#a3c1ad', '#1b2e22', '#2f6b4f'],
+]
+
+test('a person\'s palette paints on Desktop whether its page is light or dark, faint or strong', () => {
+  for (const [id, bg, text, accent] of KNOWN) {
+    const t = parseUserTheme(JSON.stringify({ id, name: id, bg, text, accent }))!
+    expect(`${id}: ${t.palette!.mode}`).toBe(`${id}: ${parseInt(text.slice(1, 3), 16) > parseInt(bg.slice(1, 3), 16) ? 'dark' : 'light'}`)
+    expect(`${id}: ${colorsOf(id, t.palette!).problems.find(l => l.startsWith("Desktop won't paint")) ?? 'paints'}`).toBe(`${id}: paints`)
+  }
+})
+
+test('a light page with dark text keeps the beat and paints when picked', async ($, on) => {
+  const tan = { id: 'tan-paper', name: 'Tan Paper', bg: '#d2b48c', text: '#2b1d0e', accent: '#8b4513' }
+  let beats = 0
+  const { sets, store } = world($, on, {
+    store: { current: 'tan-paper' },
+    files: { [win(MINE, 'tan-paper.json')]: JSON.stringify(tan) },
+    hooks: { 'clock.every': () => { beats++; return { value: undefined } } },
+  })
+  await begin($)
+  expect(beats).toBe(1)
+  expect(sets.length).toBe(1)
+  expect(store.current).toBe('tan-paper')
+})
+
+test('a person\'s theme edited and picked again is painted with its new colors', async ($, on) => {
+  const { sets, files } = world($, on, { files: { [win(MINE, 'my-dusk.json')]: JSON.stringify(OWN) } })
+  await run($, 'themes')
+  let ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'use-my-dusk' })
+  await ui.unmount()
+  const before = JSON.stringify(sets[sets.length - 1].colors)
+  files[win(MINE, 'my-dusk.json')] = JSON.stringify({ ...OWN, bg: '#331122' })
+  await run($, 'themes')
+  ui = await $.ui.mount(PANE)
+  await ui.press({ key: 'use-my-dusk' })
+  await ui.unmount()
+  expect(JSON.stringify(sets[sets.length - 1].colors)).not.toBe(before)
 })
 
 test('every scene, in every mood, stays under the Svg limit and holds nothing the Backdrop refuses', () => {
