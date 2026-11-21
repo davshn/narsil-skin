@@ -37,7 +37,7 @@ A scene drawn with characters moves behind the chat. From the pane you can chang
   <br><strong>Narsil</strong>
 </p>
 
-**Narsil** is the house theme: a night sea with a crescent moon at the top right, whose light breathes slowly. The stars twinkle, and flare when a turn ends; shooting stars cross while Claude thinks, and a blue border pulses when it is waiting for you.
+**Narsil** is the house theme: a night sea with a crescent moon high over the chat, clear of the side panes, whose light breathes slowly. The stars twinkle, and flare when a turn ends; shooting stars cross while Claude thinks, and a blue border pulses when it is waiting for you.
 
 The wave at the bottom sums up the state of all your conversations at once:
 
@@ -55,7 +55,7 @@ If one conversation is waiting for you and another has an error at the same time
   <br><strong>Narsil Light</strong>
 </p>
 
-**Narsil Light** is the daytime version for light mode: a sky-blue sky with a sun at the top right, whose rays turn slowly. The wave works the same way, in softer tones so the text over it stays readable, and the sunlight flashes when a turn ends.
+**Narsil Light** is the daytime version for light mode: a sky-blue sky with a sun high over the chat, whose rays turn slowly. The wave works the same way, in softer tones so the text over it stays readable, and the sunlight flashes when a turn ends.
 
 While Claude thinks, the scene runs three times faster.
 
