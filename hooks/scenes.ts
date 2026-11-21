@@ -27,8 +27,9 @@ const looseAt = (cx: number, cy: number, x: number, y: number, fg: string, a: nu
   `<text x="${cx + x * CELL}" y="${cy + y * CELL + 3}" fill="${fg}" opacity="${r1(a)}">${esc(glyph(LOOSE, x, y))}</text>`
 const esc = (s: string) => s.replace(/'/g, '&apos;')
 
-// The moon and the sun stand in a 1000 by 620 box pinned to the top right corner of any window
-const CX = 850, CY = 160
+// The moon and the sun stand in a 1000 by 620 box centered at the top of any window, a little right of the middle:
+// over the chat column, clear of the side panes Desktop docks at the right, which it draws opaque over the scene
+const CX = 600, CY = 140
 
 const MOON = (() => {
   const R = 5.5, body: string[] = [], halo: string[] = []
@@ -106,7 +107,7 @@ const frame = (defs: string, style: string, body: string, label: string) =>
   + `font-size="8" font-weight="700" text-anchor="middle"><title>${label}</title><defs>${defs}</defs><style>${style}</style>${body}</svg>`
 
 const corner = (inner: string) =>
-  `<svg width="100%" height="100%" viewBox="0 0 1000 620" preserveAspectRatio="xMaxYMin meet">${inner}</svg>`
+  `<svg width="100%" height="100%" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMin meet">${inner}</svg>`
 
 // Narsil: a night sea under a crescent moon whose light breathes slowly
 export const narsilScene = (s: Sky) => {
@@ -129,7 +130,7 @@ export const narsilLightScene = (s: Sky) => {
   const r = reactions(s, DAY), p = pace(s), breath = 7.85 / p, turn = 1047 / p
   const defs = '<linearGradient id="sky"><stop offset="0" stop-color="#86d1e8"/><stop offset=".24" stop-color="#b7deed"/>'
     + '<stop offset=".58" stop-color="#c9e7f1"/></linearGradient>'
-    + '<radialGradient id="flare" cx=".86" cy=".14" r=".7"><stop offset="0" stop-color="#ffd666" stop-opacity=".6"/>'
+    + '<radialGradient id="flare" cx=".6" cy=".16" r=".7"><stop offset="0" stop-color="#ffd666" stop-opacity=".6"/>'
     + `<stop offset="1" stop-color="#ffd666" stop-opacity="0"/></radialGradient>${r.defs}`
   const style = `.rays{transform-origin:${CX}px ${CY}px;opacity:.7;${loop('turn', turn, s.now)}}`
     + `.sun{opacity:.92;${loop('breath', breath, s.now, 'ease-in-out infinite')}}`
