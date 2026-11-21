@@ -5,7 +5,7 @@
   <img src="https://raw.githubusercontent.com/davshn/narsil-pet/main/assets/readme/celebrating-oscuro.svg" width="150" alt="Narsil showing off a new theme (dark mode)">
 </p>
 
-Narsil Skin is the third mod in the [Narsil](https://github.com/davshn/narsil-pet) family, alongside [Narsil Check](https://github.com/davshn/narsil-check): it reskins the Claude desktop app. It applies live color themes (colors, fonts, corners, and shadows) and animated wallpapers drawn with characters that move behind the chat. Themes are picked from a side pane with `/narsil-skin themes`, so the space above the prompt stays free for Narsil.
+Narsil Skin is the third mod in the [Narsil](https://github.com/davshn/narsil-pet) family, alongside [Narsil Check](https://github.com/davshn/narsil-check): it reskins the Claude desktop app. It applies live color themes and animated wallpapers drawn with characters that move behind the chat, through the app's own theme API. Themes are picked from a side pane with `/narsil-skin themes`, so the space above the prompt stays free for Narsil.
 
 It is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), by [0toshigami](https://github.com/0toshigami): all the original work, the design, and the themes are theirs. See [Credits](#credits).
 
@@ -30,17 +30,17 @@ It is an **open source** Claude Code mod, released under the [MIT](#license) lic
 
 The **Auto day and night** button switches themes on its own based on your computer's clock: **Narsil Light** from 6:00 to 17:59 and **Narsil** from 18:00 to 5:59. Turn it off by clicking it again or by picking a theme by hand.
 
-The first time, the pane only shows the **Install extension** button: that is the step that installs what paints the themes (see [Installation](#installation)).
+The theme you pick is kept between sessions, and your other open conversations switch to it at their next message, or within ten seconds.
 
 ### Animated wallpapers
-A scene drawn with characters moves behind the chat. From the pane you can change its motion (smooth or cell by cell), its speed, the cell size, and the opacity of the background behind the text so it stays readable.
+A scene drawn with characters moves behind the chat. From the pane you can change its speed and how opaque the app's panels are over it (**panels**), so the text stays readable.
 
 <p align="center">
   <img src="docs/narsil.png" alt="Narsil: a night sea background with a crescent moon at the top right of the window">
   <br><strong>Narsil</strong>
 </p>
 
-**Narsil** is the house theme: a night sea with a crescent moon at the top right, whose light breathes slowly. The moon is the only part of the scene that animates. The stars twinkle when a turn ends, shooting stars cross while Claude thinks, and a blue border pulses when it is waiting for you.
+**Narsil** is the house theme: a night sea with a crescent moon at the top right, whose light breathes slowly. The stars twinkle, and flare when a turn ends; shooting stars cross while Claude thinks, and a blue border pulses when it is waiting for you.
 
 The wave at the bottom sums up the state of all your conversations at once:
 
@@ -58,22 +58,22 @@ If one conversation is waiting for you and another has an error at the same time
   <br><strong>Narsil Light</strong>
 </p>
 
-**Narsil Light** is the daytime version for light mode: a sky-blue sky with a sun at the top right, whose rays turn slowly, and all text in bold. The wave works the same way, in softer tones so the text over it stays readable, and the sunlight flashes when a turn ends.
+**Narsil Light** is the daytime version for light mode: a sky-blue sky with a sun at the top right, whose rays turn slowly. The wave works the same way, in softer tones so the text over it stays readable, and the sunlight flashes when a turn ends.
 
 While Claude thinks, the scene runs three times faster.
 
 ### Color themes
-A color theme changes the colors, the fonts, the shape of the corners, and the shadows, and can react to what Claude is doing. The mod only includes **Claude**, the app's original colors; you can [make your own](#your-own-themes).
+A color theme changes all of the app's colors, built from three: a page color, a text color, and an accent. The mod only includes **Claude**, the app's original colors; you can [make your own](#your-own-themes).
 
-If you have "reduce motion" on, the animations turn off and only the color changes remain.
+If you have "reduce motion" on, the scenes hold still and only the colors remain.
 
 ### Your own themes
 Ask Claude to "make me a theme" with an idea, an image, or both. The `make-theme` skill asks you which kind you want, shows you a draft as an Artifact for you to approve, and then builds it.
 
 You can also create them by hand in `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`):
 
-- **Color theme**: `<id>.json`, with an optional `<id>.css`.
-- **Animated wallpaper**: `<id>.json` with `"wallpaper": "<id>"` and the scene in `<id>.js`. It shows up when you pick it in `/narsil-skin themes`, without restarting.
+- **Color theme**: `<id>.json` with `id`, `name`, and the `bg`, `text`, and `accent` colors as `#rrggbb`.
+- **Animated wallpaper**: the same `<id>.json`, with the scene as an SVG in `<id>.svg` beside it. It shows up when you pick it in `/narsil-skin themes`, without restarting.
 
 They appear under **Your themes**, and a mod update does not delete them.
 
@@ -91,12 +91,13 @@ In the desktop app, where `/plugin` does not work: open **Settings → Plugins**
 Then:
 
 1. If `/narsil-skin` does not show up in the command list, run `/reload-plugins` and then `/reload-skills`.
-2. Run `/narsil-skin themes` in a conversation. On the **+ New** home page it only opens a new conversation: run it again inside that one.
-3. Click **Install extension**. It copies the extension that paints the themes into the app's `extensions` folder and sets `REACT_PROFILE=1`, which makes the app load it:
-   - **Windows**: the folder is `%LOCALAPPDATA%\Claude-Data\claude_<id>\extensions` in recent installs (including the Microsoft Store one) and `%APPDATA%\Claude\extensions` in the others. The variable is set for your user.
-   - **macOS**: the folder is `~/Library/Application Support/Claude/extensions`. The variable is set with `launchctl setenv`, and a LaunchAgent (`~/Library/LaunchAgents/com.github.0toshigami.themes-for-claude.plist`) sets it again at each login.
-4. Quit the app completely (on Windows, also from the system tray; on macOS, with Cmd+Q) and open it again.
-5. Run `/narsil-skin themes` and pick a theme.
+2. Run `/narsil-skin themes` in a conversation and pick a theme. On the **+ New** home page it only opens a new conversation: run it again inside that one.
+
+There is nothing else to install: the themes paint through the app's own theme API, with no restart.
+
+### Coming from 1.x
+
+Versions 1.x painted the themes with an extension that Claude Desktop 6.28899 and later no longer loads. If it is still installed, the themes pane says so: click **Remove old extension** to take it out, along with the `REACT_PROFILE` variable when no other mod uses its folder. Your theme choice carries over. Custom stylesheets (`<id>.css`) and canvas scenes (`<id>.js`) of your own themes are no longer read: their colors still work, and a scene can be redrawn as `<id>.svg`.
 
 To update to the latest version:
 
@@ -115,28 +116,25 @@ To update to the latest version:
 
 ## Supported systems
 
-The themes are painted by an extension inside the desktop app, so they are only visible there:
+The themes are painted by the apps that draw Claude Code's themes:
 
-| | Desktop app | Terminal, VS Code, and mobile app |
-| --- | --- | --- |
-| Themes pane | Yes | The pane is drawn, but there is nothing to paint |
-| Color themes and animated wallpapers | Yes, on Windows and macOS | No |
-| Linux | Not yet | No |
+| | Desktop app | Mobile app | Terminal and VS Code |
+| --- | --- | --- | --- |
+| Themes pane | Yes | Yes | The pane is drawn, but there is nothing to paint |
+| Color themes | Yes | Yes | No |
+| Animated wallpapers | Yes | Yes, under one veil | No |
 
-It is not an official app feature: it relies on the mods and extensions the app already has, so an app update may break it.
+It uses the theme API that Claude Code gives mods, from version 2.1.328.
 
 ## Uninstalling
 
-Uninstalling the plugin only removes its commands. The extension in the `extensions` folder stays, so remove it first:
+1. Pick **Claude** in `/narsil-skin themes` to bring back the app's colors (uninstalling also takes the theme with it).
+2. Uninstall the plugin: in **Settings → Plugins** or with `claude plugin uninstall narsil-skin`.
+3. Optional: also remove the marketplace, with `claude plugin marketplace remove narsil-skin` or from **Settings → Plugins → Add → Manage marketplaces**.
 
-1. Run `/narsil-skin themes` and click **Remove extension**. It removes the mod's files and entries from `fmkadmapgofadopljbjfkapdkoienihi`, in the app's `extensions` folder. If no other mod uses that folder, it also deletes it along with the `REACT_PROFILE` variable (and on macOS, the LaunchAgent). If another mod uses it, it leaves both.
-2. Restart the app.
-3. Uninstall the plugin: in **Settings → Plugins** or with `claude plugin uninstall narsil-skin`.
-4. Optional: also remove the marketplace, with `claude plugin marketplace remove narsil-skin` or from **Settings → Plugins → Add → Manage marketplaces**.
+Your themes, and the conversations' shared state in `.state`, stay in `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`). Delete that folder if you do not want them.
 
-Your themes in `%USERPROFILE%\.claude\narsil-skin\` (macOS: `~/.claude/narsil-skin/`) stay. Delete that folder if you do not want them.
-
-If you uninstalled the plugin first, remove the extension by hand. The folder may hold other mods, so this only deletes it, along with the variable, when it contains only this one. In PowerShell:
+If a 1.x extension is still in the app's `extensions` folder, click **Remove old extension** in the themes pane before uninstalling, or remove it by hand. The folder may hold other mods, so this only deletes it, along with the variable, when it contains only this one. In PowerShell:
 
 ```powershell
 $data = Get-ChildItem "$env:LOCALAPPDATA\Claude-Data" -Directory -Filter 'claude*' -ErrorAction SilentlyContinue |
@@ -160,9 +158,7 @@ else echo "Another mod shares $d. Delete only theme.js, theme.json and event.jso
 
 ## Security
 
-A theme's stylesheet is applied to your signed-in Claude page, so the extension rejects any stylesheet that loads something from outside: no `@import` and no `url()`, except `data:`. A theme's `.json` and `.css` are data only.
-
-An animated wallpaper's scene (`<id>.js`) is code and runs on your signed-in Claude page. Only keep scenes you made yourself or that you trust, as with any other code.
+A theme is data only. Its colors go to the app through the theme API, and an animated wallpaper's scene (`<id>.svg`) is drawn by the app as a pure vector picture: it refuses any scene that holds a script, a picture, a font, or a link to anything outside it.
 
 ## Development
 
@@ -176,18 +172,18 @@ claude plugin validate .
 claude plugin test .
 ```
 
-- `hooks/register.tsx`: the mod's hooks (the themes pane, `/narsil-skin themes`, installing and removing the extension, and the reactions to what Claude is doing).
+- `hooks/register.tsx`: the mod's hooks (the themes pane, `/narsil-skin themes`, setting the theme, the Backdrop scene, the reactions to what Claude is doing, and removing the 1.x extension).
+- `hooks/look.ts`: the themes' palettes and the colors built from them with `make-colors.js`, which comes from the plugin-authoring skill and is left as it is.
+- `hooks/scenes.ts`: the animated wallpapers, as SVG scenes.
 - `hooks/themes.ts`: the list of themes, reading your themes, and the pane's thumbnails.
 - `hooks/thumbs.ts`: the animated wallpapers' thumbnails.
-- `extension/`: the extension that paints the themes inside the app (`core.js`, `engine.js`, and the scenes in `extension/src/scenes/`).
-- `themes/`: the color themes' stylesheets, with the shared base in `_base.css` and `_wallpaper.css`.
 - `skills/make-theme/`: the skill that creates new themes.
-- `tools/`: the extension build and the thumbnail capture.
+- `tools/thumbs/`: the thumbnail capture.
 - `tests/`: the tests.
 
 ## Credits
 
-Narsil Skin is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), created by [0toshigami](https://github.com/0toshigami). The themes, the animated wallpapers, the extension, and the `make-theme` skill are their work. This fork is maintained by [davshn](https://github.com/davshn), who moved the theme picker to a side pane to keep the space above the prompt free.
+Narsil Skin is a fork of [claude-desktop-themes](https://github.com/0toshigami/claude-desktop-themes), created by [0toshigami](https://github.com/0toshigami). The themes, the animated wallpapers, the original extension, and the `make-theme` skill are their work. This fork is maintained by [davshn](https://github.com/davshn), who moved the theme picker to a side pane to keep the space above the prompt free.
 
 Thanks also to [@handsher_NGU](https://x.com/handsher_NGU/status/2115618341675319417/video/1), whose post gave the idea for the original mod.
 
