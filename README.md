@@ -33,7 +33,7 @@ The **Auto day and night** button switches themes on its own based on your compu
 The theme you pick is kept between sessions, and your other open conversations switch to it at their next message, or within ten seconds.
 
 ### Animated wallpapers
-A scene drawn with characters moves behind the chat. From the pane you can change its speed and how opaque the app's panels are over it (**panels**), so the text stays readable.
+A scene drawn with characters moves behind the chat. From the pane you can change its speed and how opaque the app's panels, the sidebar among them, are over it (**panels**: from clear glass to 80%, 40% by default), so the text stays readable. The themes pane itself paints no ground over a live wallpaper, so the scene shows through it.
 
 <p align="center">
   <img src="docs/narsil.png" alt="Narsil: a night sea background with a crescent moon at the top right of the window">

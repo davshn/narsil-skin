@@ -12,15 +12,19 @@ import { THEMES, parseUserTheme, tile } from './themes'
 const current = atom({ plugin: 'narsil-skin', key: 'current' } as const, 'claude')
 const speed = atom({ plugin: 'narsil-skin', key: 'speed' } as const, 4)
 const SPEEDS = [1, 2, 4, 8, 16]
-// how opaque the app's panels are over a live wallpaper
-const veil = atom({ plugin: 'narsil-skin', key: 'veil' } as const, .6)
-const VEILS = [.2, .4, .6, .8]
+// how opaque the app's panels (its sidebar among them) are over a live wallpaper: 0 leaves them clear glass
+const veil = atom({ plugin: 'narsil-skin', key: 'veil' } as const, .4)
+const VEILS = [0, .2, .4, .6, .8]
 const sky = atom({ plugin: 'narsil-skin', key: 'sky' } as const,
   { wave: '' as Wave, tide: false, state: 'idle' as State, flare: false })
 const legacy = atom({ plugin: 'narsil-skin', key: 'legacy' } as const, false)
 // The picker is a side pane (not a strip above the prompt), so it leaves the prompt to other mods
 const PANE = 'themes'
-const openPane = ($: EngineInterface) => $.ui.open({ id: PANE, title: 'Themes', focus: true, closeOnEscape: true })
+// over a live wallpaper the pane paints no ground of its own, so the scene shows through it
+const openPane = async ($: EngineInterface) => $.ui.open({
+  id: PANE, title: 'Themes', focus: true, closeOnEscape: true,
+  ...((await active($))?.wallpaper ? { backgroundColor: 'transparent' as const } : {}),
+})
 
 // Paths join with the separator the base path already uses: Windows paths hold a backslash, macOS ones never do
 const join = (base: string, ...parts: string[]) => [base, ...parts].join(base.includes('\\') ? '\\' : '/')
@@ -439,7 +443,7 @@ export const register: Register = on => {
             <Text dimColor>speed</Text>
             <Button key="speed" label={`${pace}×`} onPress={() => nextSpeed($)} />
             <Text dimColor>panels</Text>
-            <Button key="veil" label={`${Math.round(glass * 100)}%`} onPress={() => nextVeil($)} />
+            <Button key="veil" label={glass ? `${Math.round(glass * 100)}%` : 'Clear'} onPress={() => nextVeil($)} />
           </Box>
         ) : null}
         <Box key="auto-row" flexDirection="row" gap={1} alignItems="center" flexWrap="wrap">

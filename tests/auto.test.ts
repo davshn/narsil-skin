@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
 import { isDay } from '../hooks/register'
-import { PANE, SLOT, begin, scene, win, world } from './world'
+import { PANE, SLOT, begin, run, scene, win, world } from './world'
 
 const hourTheme = () => (isDay(new Date().getHours()) ? 'narsil-light' : 'narsil')
 const last = (sets: any[]) => sets[sets.length - 1]
@@ -19,7 +19,7 @@ test('the auto button keeps auto and paints the theme of the hour, colors and sc
   await ui.press({ key: 'auto' })
   await ui.unmount()
   expect(store.current).toBe('auto')
-  expect(last(sets).backdrop).toMatchObject({ scene: hourTheme(), glass: { opacity: .6 } })
+  expect(last(sets).backdrop).toMatchObject({ scene: hourTheme(), glass: { opacity: .4 } })
   expect(last(sets).colors).toBeDefined()
 })
 
@@ -56,15 +56,34 @@ test('changing the wallpaper speed keeps auto on, is kept, and the scene moves f
   expect(Math.round((before / await breath()) * 10) / 10).toBe(2)
 })
 
-test('the panels button makes the app\'s panels more opaque over the wallpaper, and is kept', async ($, on) => {
+test('the panels button steps the app\'s panels from 40% to clear glass over the wallpaper, and is kept', async ($, on) => {
   const { store, sets } = world($, on, { store: { current: 'narsil' } })
   await begin($)
-  expect(last(sets).backdrop.glass.opacity).toBe(.6)
+  expect(last(sets).backdrop.glass.opacity).toBe(.4)
   const ui = await $.ui.mount(PANE)
   await ui.press({ key: 'veil' })
+  expect(store.veil).toBe(.6)
+  expect(last(sets).backdrop.glass).toMatchObject({ opacity: .6, tint: '#0f1a2c' })
+  await ui.press({ key: 'veil' })
+  await ui.press({ key: 'veil' })
   await ui.unmount()
-  expect(store.veil).toBe(.8)
-  expect(last(sets).backdrop.glass).toMatchObject({ opacity: .8, tint: '#0f1a2c' })
+  expect(store.veil).toBe(0)
+  expect(last(sets).backdrop.glass.opacity).toBe(0)
+})
+
+test('over a live wallpaper the themes pane opens with no ground of its own, over plain colors it keeps the app\'s', async ($, on) => {
+  const opens: any[] = []
+  const { store } = world($, on, {
+    store: { current: 'narsil' },
+    hooks: { 'ui.open': ($: any, e: any) => { opens.push(e); return { value: { isPlaced: true } } } },
+  })
+  await begin($)
+  await run($, 'themes')
+  expect(opens[0].backgroundColor).toBe('transparent')
+  store.current = 'claude'
+  await $.turn.start({ text: '', turnId: 't1' })
+  await run($, 'themes')
+  expect(opens[1].backgroundColor).toBeUndefined()
 })
 
 test('a session started under auto paints the theme of the hour and still drives the reactions', async ($, on) => {
