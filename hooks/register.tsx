@@ -7,6 +7,7 @@ import { SCENES } from './scenes'
 import { ASK_PX, asking } from './asking'
 import { HEAD_PX, head } from './spinner'
 import { THEMES, parseUserTheme, tile } from './themes'
+import { TOOL_PX, faceOf, toolFace } from './tools'
 
 // Themes paint through the mod API: `$.theme.set` with the theme's colors and, for a live wallpaper, a Backdrop
 // scene this module draws. Each conversation sets its own at start and follows the choice the others make.
@@ -426,6 +427,22 @@ export const register: Register = on => {
           <Svg source={asking()} alt="Narsil" width={ASK_PX} height={ASK_PX} isInteractive />
           <Text>Narsil tiene una pregunta para ti</Text>
         </Box>
+        {await next(e)}
+      </Box>
+    )
+  })
+
+  // Narsil's face beside each tool call's row, under her own themes, telling how the call is going. Reads,
+  // searches and listings fold into one group line, which raises no ToolUse and keeps the app's look
+  on('ui.render', { component: 'ToolUse' }, async ($, e, next) => {
+    if (e.surface !== 'desktop') return next(e)
+    const t = await active($)
+    if (t?.id !== DAY && t?.id !== NIGHT) return next(e)
+    const face = faceOf(e.props)
+    const { Box, Svg } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" alignItems="flex-start" gap={1}>
+        <Svg source={toolFace(face)} alt={`Narsil: ${face}`} width={TOOL_PX} height={TOOL_PX} isInteractive={face === 'working'} />
         {await next(e)}
       </Box>
     )
