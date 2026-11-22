@@ -14,14 +14,21 @@ const c = HEAD_SIZE / 2
 const rotations = Array.from({ length: STEPS + 1 }, (_, i) => TILT * Math.sin((2 * Math.PI * i) / STEPS))
   .map(a => `${a.toFixed(1)} ${c} ${c}`).join(';')
 
+// shows what is classed light in light mode and what is classed dark in dark mode
+export const MODE_STYLE =
+  `<style>.dark{display:none}@media (prefers-color-scheme: dark){.light{display:none}.dark{display:inline}}</style>`
+
+// a picture's light and dark versions, each shown only in its own mode
+const byMode = (art: { light: string; dark: string }) =>
+  `${MODE_STYLE}<g class="light">${art.light}</g><g class="dark">${art.dark}</g>`
+
 // `begin` sets the swing where the clock has it, so a redraw mid-turn carries on instead of starting over
 export const head = (now: number) => {
   const phase = ((now / 1000) % PERIOD).toFixed(2)
   const box = HEAD_SIZE + 2 * PAD
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-PAD} ${-PAD} ${box} ${box}" width="${box}" height="${box}" ` +
-    `shape-rendering="crispEdges"><style>.dark{display:none}` +
-    `@media (prefers-color-scheme: dark){.light{display:none}.dark{display:inline}}</style><g>` +
+    `shape-rendering="crispEdges"><g>` +
     `<animateTransform attributeName="transform" type="rotate" values="${rotations}" ` +
     `dur="${PERIOD}s" begin="-${phase}s" repeatCount="indefinite"/>` +
-    `<g class="light">${HEADS.light}</g><g class="dark">${HEADS.dark}</g></g></svg>`
+    `${byMode(HEADS)}</g></svg>`
 }
