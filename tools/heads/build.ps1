@@ -2,16 +2,20 @@
 # thinking indicator and the question card. The desktop app scrubs a PNG embedded in an SVG, so the picture
 # is redrawn as plain vectors. The head is the top square of her transparent art in the narsil-pet repository.
 #   powershell -ExecutionPolicy Bypass -File tools/heads/build.ps1 -Art <path-to-narsil-pet>/assets
-# -Size is the thinking indicator's grid, -AskSize the question card's: finer, as the card draws her larger.
-param([Parameter(Mandatory = $true)][string]$Art, [int]$Size = 32, [int]$AskSize = 80)
+# -Size is the thinking indicator's grid, -AskSize the question card's: finer, as the card draws her larger;
+# -ToolSize the tool rows'. -Preview names a folder to save each face as a PNG, to look at.
+param([Parameter(Mandatory = $true)][string]$Art, [int]$Size = 32, [int]$AskSize = 80, [int]$ToolSize = 24, [double]$Feather = 3, [string]$Preview)
 
 $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Add-Type -AssemblyName System.Drawing
 
-function Get-Head([string]$file, [int]$n) {
+# $face, when given, is the square around her face as center x, center y and side in the art's pixels
+function Get-Head([string]$file, [int]$n, [int[]]$face) {
   $src = [System.Drawing.Bitmap]::FromFile($file)
-  # her head and crest: a square from the top, as wide as the drawing
-  $crop = New-Object System.Drawing.Rectangle 0, 0, $src.Width, $src.Width
+  # her head and crest: a square from the top, as wide as the drawing; or the square around her face
+  $crop = if ($face) {
+    New-Object System.Drawing.Rectangle ($face[0] - [int]($face[2] / 2)), ([math]::Max(0, $face[1] - [int]($face[2] / 2))), $face[2], $face[2]
+  } else { New-Object System.Drawing.Rectangle 0, 0, $src.Width, $src.Width }
   $bmp = New-Object System.Drawing.Bitmap $n, $n, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $g = [System.Drawing.Graphics]::FromImage($bmp)
   $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
@@ -19,7 +23,51 @@ function Get-Head([string]$file, [int]$n) {
   $g.Clear([System.Drawing.Color]::Transparent)
   $g.DrawImage($src, (New-Object System.Drawing.Rectangle 0, 0, $n, $n), $crop, [System.Drawing.GraphicsUnit]::Pixel)
   $g.Dispose(); $src.Dispose()
+  # a close crop cuts through her body and the water around her: fade all outside a circle to clear, with a
+  # soft rim, so no square edge or splash shows behind her face
+  if ($face) {
+    $c = ($n - 1) / 2; $r = $n / 2 - 0.5
+    for ($y = 0; $y -lt $n; $y++) {
+      for ($x = 0; $x -lt $n; $x++) {
+        $k = [math]::Min(1, [math]::Max(0, ($r - [math]::Sqrt(($x - $c) * ($x - $c) + ($y - $c) * ($y - $c))) / $Feather))
+        if ($k -lt 1) {
+          $p = $bmp.GetPixel($x, $y)
+          $bmp.SetPixel($x, $y, [System.Drawing.Color]::FromArgb([int]($p.A * $k), $p.R, $p.G, $p.B))
+        }
+      }
+    }
+    Clear-Specks $bmp $n
+  }
   return $bmp
+}
+
+# keeps only her: the largest patch of drawn pixels; drops and sparkles floating apart from it go clear
+function Clear-Specks([System.Drawing.Bitmap]$bmp, [int]$n) {
+  $patch = New-Object 'int[]' ($n * $n)
+  $sizes = @{ }
+  $id = 0
+  for ($i = 0; $i -lt $n * $n; $i++) {
+    if ($patch[$i] -ne 0 -or $bmp.GetPixel($i % $n, [math]::Floor($i / $n)).A -lt 24) { continue }
+    $id++; $size = 0
+    $stack = New-Object System.Collections.Generic.Stack[int]
+    $stack.Push($i); $patch[$i] = $id
+    while ($stack.Count -gt 0) {
+      $j = $stack.Pop(); $size++
+      $x = $j % $n; $y = [math]::Floor($j / $n)
+      foreach ($d in @(@(1, 0), @(-1, 0), @(0, 1), @(0, -1))) {
+        $u = $x + $d[0]; $v = $y + $d[1]
+        if ($u -lt 0 -or $v -lt 0 -or $u -ge $n -or $v -ge $n) { continue }
+        $m = $v * $n + $u
+        if ($patch[$m] -eq 0 -and $bmp.GetPixel($u, $v).A -ge 24) { $patch[$m] = $id; $stack.Push($m) }
+      }
+    }
+    $sizes[$id] = $size
+  }
+  if ($id -eq 0) { return }
+  $keep = ($sizes.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 1).Key
+  for ($i = 0; $i -lt $n * $n; $i++) {
+    if ($patch[$i] -ne $keep) { $bmp.SetPixel($i % $n, [math]::Floor($i / $n), [System.Drawing.Color]::Transparent) }
+  }
 }
 
 # a pixel's color to 4 bits a channel, so neighbours merge into one run
@@ -75,11 +123,12 @@ function Get-Paths([System.Drawing.Bitmap]$bmp, [int]$n) {
 }
 
 # one pose's head, light and dark: 'hola' is her greeting, 'necesita' her surprised face when she needs you
-function Get-Pose([string]$pose, [int]$n, [string]$draw) {
+function Get-Pose([string]$pose, [int]$n, [string]$draw, [int[]]$face) {
   $pics = @{}
   foreach ($k in @('claro', 'oscuro')) {
-    $bmp = Get-Head (Join-Path $Art "$pose-$k.png") $n
+    $bmp = Get-Head (Join-Path $Art "$pose-$k.png") $n $face
     $pics[$k] = & $draw $bmp $n
+    if ($Preview) { $bmp.Save((Join-Path $Preview "$pose-$k-$n.png")) }
     $bmp.Dispose()
   }
   return $pics
@@ -87,6 +136,14 @@ function Get-Pose([string]$pose, [int]$n, [string]$draw) {
 
 $heads = Get-Pose 'hola' $Size 'Get-Rects'
 $asking = Get-Pose 'necesita' $AskSize 'Get-Paths'
+# her faces for a tool call's row, each cropped close around her face, which sits differently in each pose
+$tools = [ordered]@{
+  working = Get-Pose 'trabajando' $ToolSize 'Get-Paths' @(50, 52, 84)
+  done = Get-Pose 'terminado' $ToolSize 'Get-Paths' @(50, 40, 84)
+  failed = Get-Pose 'error' $ToolSize 'Get-Paths' @(52, 40, 84)
+  stopped = Get-Pose 'parada' $ToolSize 'Get-Paths' @(52, 48, 84)
+}
+$toolTs = ($tools.Keys | ForEach-Object { "  ${_}: { light: '$($tools[$_]['claro'])', dark: '$($tools[$_]['oscuro'])' }," }) -join "`n"
 
 $ts = @"
 // Narsil's head as pixel art: made by tools/heads/build.ps1, do not edit
@@ -101,6 +158,11 @@ export const ASK_SIZE = $AskSize
 export const ASKING = {
   light: '$($asking['claro'])',
   dark: '$($asking['oscuro'])',
+}
+// her face on a $ToolSize x $ToolSize grid beside a tool call's row: working, done, failed, stopped
+export const TOOL_SIZE = $ToolSize
+export const TOOL_FACES = {
+$toolTs
 }
 "@
 $out = Join-Path $root 'hooks\heads.ts'

@@ -65,6 +65,18 @@ Under **Narsil** and **Narsil Light**, Narsil's head takes the place of Claude's
 ### Narsil when Claude asks you something
 Under **Narsil** and **Narsil Light**, when Claude asks you a question, Narsil shows up above the question card with her surprised face, a faint, slow ripple running down her from crest to chin, and the words "Narsil tiene una pregunta para ti". The card itself is the app's, so you answer it as always. Like the thinking indicator, her dark version shows in dark mode and her light one in light mode, and under Claude's colors or your own themes the card stays as it is.
 
+### Narsil beside each tool call
+Under **Narsil** and **Narsil Light**, a small face of Narsil sits beside each tool call's row in the conversation (a command, an edit) and tells how it is going:
+
+| Face | When |
+|:-|:-|
+| Focused, bobbing | The call is running. |
+| Happy | It finished well. |
+| Wincing | It failed. |
+| Asleep | It was interrupted. |
+
+Reads, searches, and listings are folded by the app into one line, which keeps its own look. Under Claude's colors or your own themes, the rows stay as they are.
+
 ### Color themes
 A color theme changes all of the app's colors, built from three: a page color, a text color, and an accent. The mod only includes **Claude**, the app's original colors; you can [make your own](#your-own-themes).
 
@@ -182,7 +194,8 @@ claude plugin test .
 - `hooks/thumbs.ts`: the animated wallpapers' thumbnails.
 - `hooks/spinner.ts`: Narsil's head in place of the thinking indicator, and its tilt.
 - `hooks/asking.ts`: Narsil's surprised face above the question card, and its wave.
-- `hooks/heads.ts`: her head, light and dark, greeting and surprised, as pixel art; made by `tools/heads/build.ps1` from the art in [narsil-pet](https://github.com/davshn/narsil-pet), since the app drops a picture embedded in an SVG.
+- `hooks/tools.ts`: Narsil's face beside each tool call's row, by how the call is going.
+- `hooks/heads.ts`: her faces, light and dark, as pixel art; made by `tools/heads/build.ps1` from the art in [narsil-pet](https://github.com/davshn/narsil-pet), since the app drops a picture embedded in an SVG.
 - `skills/make-theme/`: the skill that creates new themes.
 - `tools/thumbs/`: the thumbnail capture.
 - `tools/heads/`: the script that makes `hooks/heads.ts`.
