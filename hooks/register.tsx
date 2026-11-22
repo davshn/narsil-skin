@@ -4,6 +4,7 @@ import type { EngineInterface, Register, ThemeColors, ThemeSetArgs } from 'claud
 import type { Mood as State, Theme, Wave } from '../types'
 import { BLOCKING, colorsOf } from './look'
 import { SCENES } from './scenes'
+import { HEAD_PX, head } from './spinner'
 import { THEMES, parseUserTheme, tile } from './themes'
 
 // Themes paint through the mod API: `$.theme.set` with the theme's colors and, for a live wallpaper, a Backdrop
@@ -394,6 +395,21 @@ export const register: Register = on => {
     const { Svg } = els
     const source = own?.scene ?? draw!({ ...(await read($, sky)), speed: await read($, speed), now: Date.now() })
     return <Svg source={source} alt={own ? own.tagline || own.name : 'A sea, its wave showing what Claude is doing'} isInteractive />
+  })
+
+  // Narsil's head in place of the desktop's thinking indicator, under her own themes. The desktop draws its
+  // own while a tool runs, whatever this answers
+  on('ui.render', { component: 'Spinner' }, async ($, e, next) => {
+    if (e.surface !== 'desktop') return next(e)
+    const t = await active($)
+    if (t?.id !== DAY && t?.id !== NIGHT) return next(e)
+    const { Box, Text, Svg } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" alignItems="center" justifyContent="flex-start" alignSelf="flex-start" width="100%" gap={1}>
+        <Svg source={head(Date.now())} alt="Narsil" width={HEAD_PX} height={HEAD_PX} isInteractive />
+        <Text>{e.props.message ?? e.props.word}{e.props.suffix}</Text>
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
