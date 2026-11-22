@@ -15,6 +15,15 @@ const BOB_PERIOD = 1.2 // seconds for one bob
 export const faceOf = (p: { isRunning: boolean; isErrored: boolean; isInterrupted: boolean }): ToolFace =>
   p.isInterrupted ? 'stopped' : p.isErrored ? 'failed' : p.isRunning ? 'working' : 'done'
 
+type CallState = { isRunning: boolean; isErrored: boolean; isInterrupted: boolean }
+
+// a folded group of calls by the one that matters most: still running, then interrupted, then failed
+export const groupFaceOf = (calls: readonly CallState[]): ToolFace =>
+  calls.some(c => c.isRunning) ? 'working'
+    : calls.some(c => c.isInterrupted) ? 'stopped'
+    : calls.some(c => c.isErrored) ? 'failed'
+    : 'done'
+
 export const toolFace = (face: ToolFace) => {
   const art = TOOL_FACES[face]
   const moving = face === 'working'

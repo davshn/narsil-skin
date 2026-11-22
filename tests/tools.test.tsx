@@ -77,3 +77,58 @@ test("the terminal keeps its own tool row under Narsil's themes", async ($, on) 
   expect(source).toBe('')
   expect(rows).toBe(1)
 })
+
+const group = (surface: string, calls: Array<{ isRunning?: boolean; isErrored?: boolean; isInterrupted?: boolean }>, isExpanded = false) => ({
+  plugin: 'narsil-skin',
+  surface,
+  component: 'ToolGroup',
+  requestId: 'group_1',
+  props: {
+    calls: calls.map((c, i) => ({
+      tool_use_id: `toolu_${i}`, tool: 'Read', input: { file_path: `/f${i}` },
+      isRunning: false, isErrored: false, isInterrupted: false, ...c,
+    })),
+    isActive: calls.some(c => c.isRunning),
+    isExpanded,
+  },
+}) as const
+
+const drawGroup = async ($: any, surface: string, calls: any[], isExpanded = false) => {
+  const ui = await $.ui.mount(group(surface, calls, isExpanded))
+  const svg: any = await ui.find({ type: 'Svg' })
+  const lines = (JSON.stringify(await ui.drawn()).match(/"type":"engine"/g) ?? []).length
+  await ui.unmount()
+  return { source: String(svg?.props?.source ?? ''), lines }
+}
+
+const GROUPS = [
+  ['working', 'while any of its calls runs', [{}, { isRunning: true }, { isErrored: true }]],
+  ['stopped', 'when one was interrupted', [{}, { isInterrupted: true, isErrored: true }, { isErrored: true }]],
+  ['failed', 'when one failed', [{}, { isErrored: true }]],
+  ['done', 'once all ran well', [{}, {}, {}]],
+] as const
+
+for (const [face, when, calls] of GROUPS)
+  test(`under narsil a folded group shows Narsil's ${face} face ${when}, and keeps its line`, async ($, on) => {
+    world($, on, { store: { current: 'narsil' }, hooks: ENGINE })
+    await begin($)
+    const { source, lines } = await drawGroup($, 'desktop', [...calls])
+    expect(source).toContain(TOOL_FACES[face].light)
+    expect(source).toContain(TOOL_FACES[face].dark)
+    expect(lines).toBe(1)
+  })
+
+test('an unfolded group adds no face of its own: each of its rows has one', async ($, on) => {
+  world($, on, { store: { current: 'narsil' }, hooks: ENGINE })
+  await begin($)
+  const { source, lines } = await drawGroup($, 'desktop', [{}, {}], true)
+  expect(source).toBe('')
+  expect(lines).toBe(1)
+})
+
+test("Claude's own colors and the terminal keep the app's group line", async ($, on) => {
+  world($, on, { store: { current: 'claude' }, hooks: ENGINE })
+  await begin($)
+  expect((await drawGroup($, 'desktop', [{ isRunning: true }])).source).toBe('')
+  expect((await drawGroup($, 'terminal', [{ isRunning: true }])).source).toBe('')
+})

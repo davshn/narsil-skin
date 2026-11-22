@@ -75,7 +75,7 @@ Under **Narsil** and **Narsil Light**, a small face of Narsil sits beside each t
 | Wincing | It failed. |
 | Asleep | It was interrupted. |
 
-Reads, searches, and listings are folded by the app into one line, which keeps its own look. Under Claude's colors or your own themes, the rows stay as they are.
+Reads, searches, and listings are folded by the app into one line ("Read 3 files"), and that line gets one face for all of them: working while any still runs, then asleep if one was interrupted, wincing if one failed, and happy once all went well. When you unfold it, each row shows its own face. Under Claude's colors or your own themes, the rows stay as they are.
 
 ### Color themes
 A color theme changes all of the app's colors, built from three: a page color, a text color, and an accent. The mod only includes **Claude**, the app's original colors; you can [make your own](#your-own-themes).
@@ -194,7 +194,7 @@ claude plugin test .
 - `hooks/thumbs.ts`: the animated wallpapers' thumbnails.
 - `hooks/spinner.ts`: Narsil's head in place of the thinking indicator, and its tilt.
 - `hooks/asking.ts`: Narsil's surprised face above the question card, and its wave.
-- `hooks/tools.ts`: Narsil's face beside each tool call's row, by how the call is going.
+- `hooks/tools.ts`: Narsil's face beside each tool call's row and each folded group of calls, by how they are going.
 - `hooks/heads.ts`: her faces, light and dark, as pixel art; made by `tools/heads/build.ps1` from the art in [narsil-pet](https://github.com/davshn/narsil-pet), since the app drops a picture embedded in an SVG.
 - `skills/make-theme/`: the skill that creates new themes.
 - `tools/thumbs/`: the thumbnail capture.
