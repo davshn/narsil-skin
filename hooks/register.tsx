@@ -4,6 +4,7 @@ import type { EngineInterface, Register, ThemeColors, ThemeSetArgs } from 'claud
 import type { Mood as State, Theme, Wave } from '../types'
 import { BLOCKING, colorsOf } from './look'
 import { SCENES } from './scenes'
+import { ASK_PX, asking } from './asking'
 import { HEAD_PX, head } from './spinner'
 import { THEMES, parseUserTheme, tile } from './themes'
 
@@ -408,6 +409,24 @@ export const register: Register = on => {
       <Box flexDirection="row" alignItems="center" justifyContent="flex-start" alignSelf="flex-start" width="100%" gap={1}>
         <Svg source={head(Date.now())} alt="Narsil" width={HEAD_PX} height={HEAD_PX} isInteractive />
         <Text>{e.props.message ?? e.props.word}{e.props.suffix}</Text>
+      </Box>
+    )
+  })
+
+  // Narsil's surprised face above the card where Claude asks a question, under her own themes. The card is
+  // the engine's: it stays whole, once, below her
+  on('ui.render', { component: 'AskUserQuestion' }, async ($, e, next) => {
+    if (e.surface !== 'desktop') return next(e)
+    const t = await active($)
+    if (t?.id !== DAY && t?.id !== NIGHT) return next(e)
+    const { Box, Text, Svg } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="column" gap={1}>
+        <Box flexDirection="row" alignItems="center" gap={1}>
+          <Svg source={asking()} alt="Narsil" width={ASK_PX} height={ASK_PX} isInteractive />
+          <Text>Narsil tiene una pregunta para ti</Text>
+        </Box>
+        {await next(e)}
       </Box>
     )
   })
